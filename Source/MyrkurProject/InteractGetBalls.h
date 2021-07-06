@@ -4,24 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "Engine/StaticMeshActor.h"
-#include "InteractiveObject.generated.h"
+#include "InteractiveObject.h"
+#include "InteractGetBalls.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYRKURPROJECT_API AInteractiveObject : public AStaticMeshActor
+class MYRKURPROJECT_API AInteractGetBalls : public AInteractiveObject
 {
 	GENERATED_BODY()
 
 public:
     // Sets default values for this actor's properties
-    AInteractiveObject();
+    AInteractGetBalls();
 
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-	virtual void Interact();
+	void Interact();
 protected:
 private:
 };
