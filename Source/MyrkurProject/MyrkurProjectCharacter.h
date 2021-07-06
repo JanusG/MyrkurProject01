@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Components/TimelineComponent.h"
 #include "MyrkurProjectCharacter.generated.h"
 
 class UInputComponent;
@@ -13,6 +12,9 @@ class USceneComponent;
 class UCameraComponent;
 class UAnimMontage;
 class USoundBase;
+class UCurveFloat;
+class UTimelineComponent;
+class AInteractiveObject;
 
 UCLASS(config=Game)
 class AMyrkurProjectCharacter : public ACharacter
@@ -27,6 +29,7 @@ class AMyrkurProjectCharacter : public ACharacter
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* FP_Gun;
 
+	/** Ball Mesh: Location at hands of Mesh1P */
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USkeletalMeshComponent* BallMesh;
 
@@ -70,6 +73,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UAnimMontage* FireAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UCurveFloat* ShotCurve;
+
+	/** Timeline for time between shots */
+	UPROPERTY(EditAnywhere)
+	UTimelineComponent* ShotTimeline;
+
 	/** Base percentage for player movement .5 is walking, 1.0 is running */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	float RunSpeed = 0.5;
@@ -90,6 +100,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Health)
 	void UpdateHealth(float HealthChange);
 
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay)
+	int MaxBallAmmount;
+
 	UFUNCTION()
 	void SetDamageState();
 
@@ -98,6 +112,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Health)
 	void DamageTimer();
 
+	// Reference UMG Asset in the Editor
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	TSubclassOf<UUserWidget> HelpWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	UUserWidget* InfoWidget;
+
+	UPROPERTY(EditAnywhere)
+	AInteractiveObject* InteractiveObject;
 protected:
 
 	/** Players full Health */
@@ -134,6 +157,18 @@ protected:
 	/** Handles sprint movements */
 	void Run();
 	void StopRuning();
+
+	/** Set state of which player can shoot */
+	void SetShotState();
+
+	/** Give the player max ammount of balls */
+	void SetBallsToMax();
+
+	/** 
+	* Sets the ammount of balls for the player
+	* @param Ammount How many balls the player gets
+	*/
+	void SetBallAmmount(int Ammount);
 
 	/**
 	 * Called via input to turn at a given rate.

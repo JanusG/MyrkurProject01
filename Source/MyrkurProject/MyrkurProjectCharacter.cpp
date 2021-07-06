@@ -13,7 +13,10 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "TimerManager.h"
+#include "Components/TimelineComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "DrawDebugHelpers.h"
+#include "InteractiveObject.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -70,13 +73,17 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	GunOffset = FVector(100.0f, 40.0f, 5.0f);
 
 	bCanShoot = true;
-	NumberOfBallsLeft = 5;
+
+	MaxBallAmmount = 5;
+	NumberOfBallsLeft = MaxBallAmmount;
 
 	FullHealth = 100.0;
 	CurrentHealth = FullHealth;
 	PercentageHealth = 1.0;
 
 	ShowDangerFlash = false;
+
+	InteractiveObject = NULL;
 
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P, FP_Gun, and VR_Gun 
 	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
@@ -87,14 +94,72 @@ void AMyrkurProjectCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	// Initialize time curve for shots
+	if (ShotCurve)
+	{
+		FOnTimelineFloat TimelineCallback;
+		FOnTimelineEventStatic TimelineFinishedCallback;
+
+		TimelineCallback.BindUFunction(this, FName("OnFire"));
+		//TimelineFinishedCallback.BindUFunction(this, FName("SetShotState"));
+
+		ShotTimeline = NewObject<UTimelineComponent>(this, FName("ShotTimer"));
+		ShotTimeline->AddInterpFloat(ShotCurve, TimelineCallback);
+		//ShotTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
+		ShotTimeline->RegisterComponent();
+	}
+
+
+	// Show UI components
+	if (HelpWidgetClass) 
+	{
+		InfoWidget = CreateWidget<UUserWidget>(GetWorld(), HelpWidgetClass);
+
+		if (InfoWidget)
+		{
+			InfoWidget->AddToViewport();
+			InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+	
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-
 }
 
 void AMyrkurProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (ShotTimeline != NULL)
+	{
+		ShotTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, NULL);
+	}
+
+	// LineTrace to search for interactable components in the scene
+	FHitResult Hit;
+	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
+
+	FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+	FVector End = ((ForwardVector * 200.f) + Start);
+	FCollisionQueryParams CollisionParams;
+
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
+	{
+		if (Hit.bBlockingHit)
+		{
+			if (Hit.GetActor()->GetClass()->IsChildOf(AInteractiveObject::StaticClass()))
+			{
+				InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Visible);
+
+				InteractiveObject = Cast<AInteractiveObject>(Hit.GetActor());
+			}
+		}
+	}
+	else
+	{
+		InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
+		InteractiveObject = NULL;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -111,6 +176,9 @@ void AMyrkurProjectCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyrkurProjectCharacter::OnFire);
+
+	// Bind action event
+	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AMyrkurProjectCharacter::SetBallsToMax);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMyrkurProjectCharacter::MoveForward);
@@ -161,19 +229,27 @@ void AMyrkurProjectCharacter::OnFire()
 			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
 			if (AnimInstance != nullptr)
 			{
-				AnimInstance->Montage_Play(FireAnimation, 1.f);
+				AnimInstance->Montage_Play(FireAnimation, 0.3f);
 			}
+		}
+
+		// Start timer for shots
+		if (ShotTimeline != NULL)
+		{
+			ShotTimeline->PlayFromStart();
+		}
+
+		// set number of balls, and if zero set character to not to be able to shoot
+		NumberOfBallsLeft--;
+
+		if (NumberOfBallsLeft <= 0)
+		{
+			bCanShoot = false;
+			BallMesh->SetVisibility(false);
 		}
 	}
 
-	NumberOfBallsLeft--;
 	
-	// set number of balls, and if zero set character to not to be able to shoot
-	if (NumberOfBallsLeft <= 0)
-	{
-		BallMesh->SetVisibility(false);
-		bCanShoot = false;
-	}
 }
 
 void AMyrkurProjectCharacter::MoveForward(float Value)
@@ -205,6 +281,29 @@ void AMyrkurProjectCharacter::StopRuning()
 {
 	// Set running speed
 	RunSpeed = 0.5;
+}
+
+void AMyrkurProjectCharacter::SetShotState()
+{
+	if (NumberOfBallsLeft > 0)
+	{
+		bCanShoot = true;
+		BallMesh->SetVisibility(true);
+	}
+}
+
+void AMyrkurProjectCharacter::SetBallsToMax()
+{
+	if (InteractiveObject != NULL)
+	{
+		SetBallAmmount(MaxBallAmmount);
+	}
+}
+
+void AMyrkurProjectCharacter::SetBallAmmount(int Ammount)
+{
+	NumberOfBallsLeft = Ammount;
+	SetShotState();
 }
 
 void AMyrkurProjectCharacter::TurnAtRate(float Rate)
