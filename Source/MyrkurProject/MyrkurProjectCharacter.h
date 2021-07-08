@@ -47,6 +47,8 @@ public:
 protected:
 	virtual void BeginPlay();
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
 	virtual void Tick(float DeltaTime) override;
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -107,8 +109,6 @@ public:
 	UFUNCTION()
 	void SetDamageState();
 
-	void ReceivePointDamage(float Damage, const class UDamageType* DamageType, FVector HitLocation, FVector HitNormal, class UPrimitiveComponent* HitComponent, FName BoneName, FVector ShotFromDirection, class AController* InstigatedBy, AActor* DamageCauser, const FHitResult& HitInfo);
-
 	UFUNCTION(BlueprintCallable, Category = Health)
 	void DamageTimer();
 
@@ -121,6 +121,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	AInteractiveObject* InteractiveObject;
+
+	/** Give the player max ammount of balls */
+	void SetBallsToMax();
 protected:
 
 	/** Players full Health */
@@ -161,8 +164,8 @@ protected:
 	/** Set state of which player can shoot */
 	void SetShotState();
 
-	/** Give the player max ammount of balls */
-	void SetBallsToMax();
+	/** Handles event of what happenes if Action button is pressed */
+	void ActionPress();
 
 	/** 
 	* Sets the ammount of balls for the player
@@ -181,6 +184,7 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+
 	
 protected:
 	// APawn interface

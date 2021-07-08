@@ -77,9 +77,9 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	MaxBallAmmount = 5;
 	NumberOfBallsLeft = MaxBallAmmount;
 
-	FullHealth = 100.0;
+	FullHealth = 100.0f;
 	CurrentHealth = FullHealth;
-	PercentageHealth = 1.0;
+	PercentageHealth = 0.5;
 
 	ShowDangerFlash = false;
 
@@ -113,17 +113,28 @@ void AMyrkurProjectCharacter::BeginPlay()
 	// Show UI components
 	if (HelpWidgetClass) 
 	{
+		// Initialize the info UI and set parameters 
 		InfoWidget = CreateWidget<UUserWidget>(GetWorld(), HelpWidgetClass);
 
 		if (InfoWidget)
 		{
 			InfoWidget->AddToViewport();
 			InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
+
+			// Hidden while the function isn't ready so not to confuse the player
+			InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
+
 		}
 	}
 	
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGrip"));
+}
+
+float AMyrkurProjectCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	UpdateHealth(-DamageAmount);
+	return 0.0f;
 }
 
 void AMyrkurProjectCharacter::Tick(float DeltaTime)
@@ -178,7 +189,7 @@ void AMyrkurProjectCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyrkurProjectCharacter::OnFire);
 
 	// Bind action event
-	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AMyrkurProjectCharacter::SetBallsToMax);
+	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AMyrkurProjectCharacter::ActionPress);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMyrkurProjectCharacter::MoveForward);
@@ -248,8 +259,6 @@ void AMyrkurProjectCharacter::OnFire()
 			BallMesh->SetVisibility(false);
 		}
 	}
-
-	
 }
 
 void AMyrkurProjectCharacter::MoveForward(float Value)
@@ -292,12 +301,18 @@ void AMyrkurProjectCharacter::SetShotState()
 	}
 }
 
-void AMyrkurProjectCharacter::SetBallsToMax()
+void AMyrkurProjectCharacter::ActionPress()
 {
+
 	if (InteractiveObject != NULL)
 	{
-		SetBallAmmount(MaxBallAmmount);
+		InteractiveObject->Interact();
 	}
+}
+
+void AMyrkurProjectCharacter::SetBallsToMax()
+{
+		SetBallAmmount(MaxBallAmmount);
 }
 
 void AMyrkurProjectCharacter::SetBallAmmount(int Ammount)
@@ -325,7 +340,7 @@ bool AMyrkurProjectCharacter::PlayDangerFlash()
 
 float AMyrkurProjectCharacter::getHealth()
 {
-	return 0.0f;
+	return PercentageHealth;
 }
 
 FText AMyrkurProjectCharacter::GetHealthText()
@@ -335,14 +350,31 @@ FText AMyrkurProjectCharacter::GetHealthText()
 
 void AMyrkurProjectCharacter::UpdateHealth(float HealthChange)
 {
+	CurrentHealth += HealthChange;
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, FullHealth);
+	PercentageHealth = CurrentHealth / FullHealth;
+
+	if (CurrentHealth > 50) {
+		print("youre fine");
+	}
+	else
+	{
+		print("you are dying!");
+	}
+	if (CurrentHealth <= 0)
+	{
+		print("you died, game set to pause");
+		APlayerController* PController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+		if (PController != nullptr)
+		{
+			PController->SetPause(true);
+		}
+	}
 }
 
 void AMyrkurProjectCharacter::SetDamageState()
 {
-}
-
-void AMyrkurProjectCharacter::ReceivePointDamage(float Damage, const UDamageType* DamageType, FVector HitLocation, FVector HitNormal, UPrimitiveComponent* HitComponent, FName BoneName, FVector ShotFromDirection, AController* InstigatedBy, AActor* DamageCauser, const FHitResult& HitInfo)
-{
+	
 }
 
 void AMyrkurProjectCharacter::DamageTimer()

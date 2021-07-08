@@ -1,8 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+// Help print debug strings
+#define print(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, text)
+#define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, FString::Printf(TEXT(text), fstring))
+
 #include "MyrkurProjectProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "MyrkurProjectCharacter.h"
 
 AMyrkurProjectProjectile::AMyrkurProjectProjectile() 
 {
@@ -22,8 +28,8 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 3000.f;
-	ProjectileMovement->MaxSpeed = 3000.f;
+	ProjectileMovement->InitialSpeed = 2100.f;
+	ProjectileMovement->MaxSpeed = 2100.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
@@ -33,11 +39,16 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 
 void AMyrkurProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Only add impulse and destroy projectile if we hit a physics
+	// Only add impulse we hit a physics
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 200.0f, GetActorLocation());
+		OtherComp->AddImpulseAtLocation(GetVelocity() * 80.0f, GetActorLocation());
 
-		/*Destroy();*/
+	}
+
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+	{
+		//Add damage to actor hit
+		UGameplayStatics::ApplyPointDamage(OtherActor, 34.0f, GetActorLocation(), Hit, nullptr, this, BluntDamage);
 	}
 }

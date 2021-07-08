@@ -17,4 +17,5 @@ void AInteractiveObject::BeginPlay()
 
 void AInteractiveObject::Interact()
 {
+    // is implemented in child classes
 }

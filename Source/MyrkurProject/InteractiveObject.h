@@ -21,6 +21,7 @@ public:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
+    // function that is overwritten in child classes for the player to interact for
 	virtual void Interact();
 protected:
 private:

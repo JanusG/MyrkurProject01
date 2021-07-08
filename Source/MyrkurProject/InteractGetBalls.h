@@ -7,6 +7,7 @@
 #include "InteractiveObject.h"
 #include "InteractGetBalls.generated.h"
 
+class AMyrkurProjectCharacter;
 /**
  * 
  */
@@ -16,13 +17,16 @@ class MYRKURPROJECT_API AInteractGetBalls : public AInteractiveObject
 	GENERATED_BODY()
 
 public:
-    // Sets default values for this actor's properties
+    /** Sets default values for this actor's properties */
     AInteractGetBalls();
 
-    // Called when the game starts or when spawned
+    /** Called when the game starts or when spawned */
     virtual void BeginPlay() override;
 
+    /** gives player some balls */
 	void Interact();
 protected:
+
+    AMyrkurProjectCharacter* player;
 private:
 };

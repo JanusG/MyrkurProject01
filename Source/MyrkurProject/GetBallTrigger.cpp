@@ -16,7 +16,7 @@ AGetBallTrigger::AGetBallTrigger()
 void AGetBallTrigger::BeginPlay()
 {
 	Super::BeginPlay();
-	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Purple, true, -1, 0, 3);
+	//DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Purple, true, -1, 0, 3);
 }
 
 void AGetBallTrigger::BeginOverlap(AActor* OverlappedActor, AActor* OtherActor)

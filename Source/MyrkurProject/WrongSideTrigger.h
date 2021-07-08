@@ -6,6 +6,8 @@
 #include "Engine/TriggerBox.h"
 #include "WrongSideTrigger.generated.h"
 
+class AMyrkurProjectCharacter;
+
 /**
  * 
  */
@@ -18,8 +20,12 @@ public:
 	AWrongSideTrigger();
 
 protected:
+	AMyrkurProjectCharacter* Character;
+
+
 	virtual void BeginPlay();
 
+	virtual void Tick(float DeltaTime) override;
 public:
 
 	/**
