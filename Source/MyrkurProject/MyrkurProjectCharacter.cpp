@@ -119,7 +119,11 @@ void AMyrkurProjectCharacter::BeginPlay()
 		if (InfoWidget)
 		{
 			InfoWidget->AddToViewport();
+			// Hide Info text that should not be shown
 			InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
+			InfoWidget->GetWidgetFromName("TextDeath")->SetVisibility(ESlateVisibility::Hidden);
+			InfoWidget->GetWidgetFromName("BlurDeath")->SetVisibility(ESlateVisibility::Hidden);
+			InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
 
 			// Hidden while the function isn't ready so not to confuse the player
 			InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
@@ -154,6 +158,7 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 	FVector End = ((ForwardVector * 200.f) + Start);
 	FCollisionQueryParams CollisionParams;
 
+	// Check if interactable component is in front of player, and if so toggle info message.
 	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
 	{
 		if (Hit.bBlockingHit)
@@ -161,7 +166,6 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 			if (Hit.GetActor()->GetClass()->IsChildOf(AInteractiveObject::StaticClass()))
 			{
 				InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Visible);
-
 				InteractiveObject = Cast<AInteractiveObject>(Hit.GetActor());
 			}
 		}
@@ -171,6 +175,13 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 		InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
 		InteractiveObject = NULL;
 	}
+
+	// if character can be damaged by AOE the set the damage and show danger screen
+	if (bCanTickDamage)
+	{
+		UpdateHealth(-0.25f);
+	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -354,29 +365,33 @@ void AMyrkurProjectCharacter::UpdateHealth(float HealthChange)
 	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, FullHealth);
 	PercentageHealth = CurrentHealth / FullHealth;
 
-	if (CurrentHealth > 50) {
-		print("youre fine");
-	}
-	else
-	{
-		print("you are dying!");
-	}
+	// Pause the game if you died and show sime kind of death screen
 	if (CurrentHealth <= 0)
 	{
-		print("you died, game set to pause");
 		APlayerController* PController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+
 		if (PController != nullptr)
 		{
 			PController->SetPause(true);
 		}
+
+		// Show info about your death
+		InfoWidget->GetWidgetFromName("TextDeath")->SetVisibility(ESlateVisibility::Visible);
+		InfoWidget->GetWidgetFromName("BlurDeath")->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
 void AMyrkurProjectCharacter::SetDamageState()
 {
-	
+	// toggle damage tick
+	bCanTickDamage = !bCanTickDamage;
+
+	// toggle info about danger if in the danger zone
+	if (bCanTickDamage) 
+	{
+		InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+	InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void AMyrkurProjectCharacter::DamageTimer()
-{
-}

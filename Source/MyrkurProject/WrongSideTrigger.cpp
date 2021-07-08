@@ -35,7 +35,7 @@ void AWrongSideTrigger::BeginOverlap(AActor * OverlappedActor, AActor * OtherAct
 		Character = Cast<AMyrkurProjectCharacter>(OtherActor);
 		if (Character != nullptr)
 		{
-			print("it hurts");
+			Character->SetDamageState();
 		}
 	}
 }
@@ -47,7 +47,7 @@ void AWrongSideTrigger::EndOverlap(AActor * OverlappedActor, AActor * OtherActor
 		// Cast to character to stop damage tick
 		if (Character != NULL)
 		{
-			print("it stopped hurting");
+			Character->SetDamageState();
 			Character = NULL;
 		}
 	}

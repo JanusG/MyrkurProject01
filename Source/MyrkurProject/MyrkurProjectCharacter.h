@@ -47,6 +47,7 @@ public:
 protected:
 	virtual void BeginPlay();
 
+	/** Set damage to Actor */
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 	virtual void Tick(float DeltaTime) override;
@@ -106,11 +107,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay)
 	int MaxBallAmmount;
 
+	/** Set if Player is taking AOE damage */
 	UFUNCTION()
 	void SetDamageState();
-
-	UFUNCTION(BlueprintCallable, Category = Health)
-	void DamageTimer();
 
 	// Reference UMG Asset in the Editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -128,25 +127,30 @@ protected:
 
 	/** Players full Health */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
-		float FullHealth;
+	float FullHealth;
 
 	/** Players CUrrent Health */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
-		float CurrentHealth;
+	float CurrentHealth;
 
 	/** Players Percentage Health */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
-		float PercentageHealth;
+	float PercentageHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int NumberOfBallsLeft;
+	int NumberOfBallsLeft;
 
 	/** toggle if player is on the wrong side */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
-		bool ShowDangerFlash;
+	bool ShowDangerFlash;
 
+	/** toggle if player is on the wrong side */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
+	bool bCanTickDamage;
+
+	/** Set if player can shoot or not */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
-		bool bCanShoot;
+	bool bCanShoot;
 	
 	/** Fires a projectile. */
 	void OnFire();

@@ -7,6 +7,7 @@
 
 #include "EnemyCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "MyrkurProjectProjectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
@@ -33,10 +34,14 @@ AEnemyCharacter::AEnemyCharacter()
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	FullHealth = 33.0f;
+	CurrentHealth = FullHealth;
 }
 
-void AEnemyCharacter::ReceivePointDamage(float Damage, const UDamageType* DamageType, FVector HitLocation, FVector HitNormal, UPrimitiveComponent* HitComponent, FName BoneName, FVector ShotFromDirection, AController* InstigatedBy, AActor* DamageCauser, const FHitResult& HitInfo)
+void AEnemyCharacter::UpdateHealth(float HealthChange)
 {
+	CurrentHealth += HealthChange;
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +52,32 @@ void AEnemyCharacter::BeginPlay()
 	// Attach to main mesh after constructor has made the bones
 	BallMesh->AttachToComponent(CMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Grip"));
 }
+
+float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	UpdateHealth(-DamageAmount);
+
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, FullHealth);
+
+	if (CurrentHealth <= 0)
+	{
+		// Set ragdoll effect
+		CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+		CMesh->SetSimulatePhysics(true);
+
+		// Stop Actor movements
+		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (CharacterComp)
+		{
+			CharacterComp->StopMovementImmediately();
+			CharacterComp->DisableMovement();
+			CharacterComp->SetComponentTickEnabled(false);
+		}
+	}
+	return 0.0f;
+}
+
+
 
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
@@ -70,8 +101,8 @@ void AEnemyCharacter::Attack()
 			APawn* OurPawn = UGameplayStatics::GetPlayerPawn(this, 0);
 			float distance = GetDistanceTo(OurPawn);
 			float arc = distance * 0.2f;
-			FString TheFloatStr = FString::SanitizeFloat(distance);
-			printf("%d", *TheFloatStr);
+			//FString TheFloatStr = FString::SanitizeFloat(distance);
+			//printf("%d", *TheFloatStr);
 
 			const FRotator SpawnRotation = GetControlRotation() + FRotator(15,0.0f, 0.0f);
 			const FVector SpawnLocation = ((BallMesh != nullptr) ? BallMesh->GetComponentLocation() : GetActorLocation());
@@ -87,7 +118,7 @@ void AEnemyCharacter::Attack()
 		// Play trowing animation if the animation is set
 		if (TrowingAnim)
 		{
-			PlayAnimMontage(TrowingAnim, 5.0f, NAME_None);
+			PlayAnimMontage(TrowingAnim);
 		}
 	}
 }

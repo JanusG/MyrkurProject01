@@ -23,7 +23,7 @@ class MYRKURPROJECT_API AEnemyCharacter : public ACharacter
 	USkeletalMeshComponent* BallMesh;
 
 public:
-	// Sets default values for this character's properties
+	/** Sets default values for this character's properties */
 	AEnemyCharacter();
 
 	/** Projectile class to spawn */
@@ -38,18 +38,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	UAnimMontage* DyingAnim;
 
-	/** Set damage to Actor */
-	void ReceivePointDamage(float Damage, const class UDamageType* DamageType, FVector HitLocation, FVector HitNormal, class UPrimitiveComponent* HitComponent, FName BoneName, FVector ShotFromDirection, class AController* InstigatedBy, AActor* DamageCauser, const FHitResult& HitInfo);
+	/** Update players health */
+	UFUNCTION(BlueprintCallable, Category = Health)
+	void UpdateHealth(float HealthChange);
 
 protected:
-	// Called when the game starts or when spawned
+	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
 
+	/** Set damage to Actor */
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	/** Players full Health */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
+	float FullHealth;
+
+	/** Players CUrrent Health */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
+	float CurrentHealth;
+
 public:	
-	// Called every frame
+	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
 
-	//Initialize an attack on the player
+	/** Initialize an attack on the player */
 	UFUNCTION(BlueprintCallable)
 	void Attack();
 };
