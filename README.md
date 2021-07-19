@@ -11,4 +11,7 @@ Trow ball with 'right mouse trigger'
 
 interact with 'E'
 
+## Updates
+- Updated ai movement and attack as well as animation
+
 
