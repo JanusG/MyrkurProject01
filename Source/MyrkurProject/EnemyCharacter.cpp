@@ -77,12 +77,26 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	return 0.0f;
 }
 
-
-
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+void AEnemyCharacter::InitAttack()
+{
+	// Play trowing animation if the animation is set
+	if (TrowingAnim)
+	{
+		// Get the animation object for the model
+		UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			print("Throw animation");
+			float montageStatus = AnimInstance->Montage_Play(TrowingAnim, 1.0f);
+		}
+	}
 
 }
 
@@ -96,15 +110,15 @@ void AEnemyCharacter::Attack()
 			// calculate the distance between the two characters to make the arc of the shoot 
 			// further away higher the arc
 
-			// TODO :
 			// find player controller and get the distance
 			APawn* OurPawn = UGameplayStatics::GetPlayerPawn(this, 0);
-			float distance = GetDistanceTo(OurPawn);
-			float arc = distance * 0.2f;
-			//FString TheFloatStr = FString::SanitizeFloat(distance);
-			//printf("%d", *TheFloatStr);
+			float distance = FVector::Dist(OurPawn->GetActorLocation(), RootComponent->GetRelativeLocation());
 
-			const FRotator SpawnRotation = GetControlRotation() + FRotator(15,0.0f, 0.0f);
+			// set a multiplyer for the arc and the distance, first to lower the dist and then multiply to get greater variance
+			float arc = (distance * 0.004f) * 1.45f;
+
+			// Set the spawn velocity
+			const FRotator SpawnRotation = GetControlRotation() + FRotator(arc,0.0f, 0.0f);
 			const FVector SpawnLocation = ((BallMesh != nullptr) ? BallMesh->GetComponentLocation() : GetActorLocation());
 
 			//Set Spawn Collision Handling Override
@@ -113,13 +127,16 @@ void AEnemyCharacter::Attack()
 
 			// spawn the projectile at positon of the ball
 			World->SpawnActor<AMyrkurProjectProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-		}
 
-		// Play trowing animation if the animation is set
-		if (TrowingAnim)
-		{
-			PlayAnimMontage(TrowingAnim);
+			// Hide the ball until the character acquires a new one
+			BallMesh->SetVisibility(false);
 		}
 	}
+}
+
+void AEnemyCharacter::SeteWeaponVisible()
+{
+	// Show curren weapon
+	BallMesh->SetVisibility(true);
 }
 

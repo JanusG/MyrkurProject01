@@ -13,5 +13,7 @@ UCLASS()
 class MYRKURPROJECT_API UThrowNotify : public UAnimNotify
 {
 	GENERATED_BODY()
-	
+
+private:
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 };

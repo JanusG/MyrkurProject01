@@ -61,7 +61,15 @@ public:
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
 
+	/** Initialize an attack with animation montage */
+	UFUNCTION(BlueprintCallable)
+	void InitAttack();
+
 	/** Initialize an attack on the player */
 	UFUNCTION(BlueprintCallable)
 	void Attack();
+
+	/** Set active weapon visible */
+	UFUNCTION(BlueprintCallable)
+	void SeteWeaponVisible();
 };
