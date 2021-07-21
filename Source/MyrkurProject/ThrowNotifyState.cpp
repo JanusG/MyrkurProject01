@@ -19,7 +19,6 @@ void UThrowNotifyState::NotifyTick(USkeletalMeshComponent * MeshComp, UAnimSeque
 
 void UThrowNotifyState::NotifyEnd(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation)
 {
-    print("Run Now, not before");
     AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(MeshComp->GetOwner());
     if(Enemy != nullptr)
     {

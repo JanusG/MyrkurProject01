@@ -17,6 +17,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "InteractiveObject.h"
+#include "math.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -79,7 +80,7 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 
 	FullHealth = 100.0f;
 	CurrentHealth = FullHealth;
-	PercentageHealth = 0.5;
+	PercentageHealth = 1;
 
 	ShowDangerFlash = false;
 
@@ -126,7 +127,7 @@ void AMyrkurProjectCharacter::BeginPlay()
 			InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
 
 			// Hidden while the function isn't ready so not to confuse the player
-			InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
+			// InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
 
 		}
 	}
@@ -346,6 +347,12 @@ void AMyrkurProjectCharacter::LookUpAtRate(float Rate)
 
 bool AMyrkurProjectCharacter::PlayDangerFlash()
 {
+	// if already flashing then return true and reset check
+	if(isFlashingDanger)
+	{
+		isFlashingDanger = false;
+		return true;
+	}
 	return false;
 }
 
@@ -356,7 +363,13 @@ float AMyrkurProjectCharacter::getHealth()
 
 FText AMyrkurProjectCharacter::GetHealthText()
 {
-	return FText();
+	// Round to nearest zero
+	int32 HP = FMath::RoundHalfFromZero(PercentageHealth* 100);
+	FString HPS = FString::FromInt(HP);
+	FString HealthHUD = HPS + FString(TEXT("%"));
+	FText HPText = FText::FromString(HealthHUD);
+
+	return HPText;
 }
 
 void AMyrkurProjectCharacter::UpdateHealth(float HealthChange)

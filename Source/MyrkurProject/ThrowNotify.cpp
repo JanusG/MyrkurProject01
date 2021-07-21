@@ -14,7 +14,6 @@ void UThrowNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* A
     if(Enemy != nullptr)
     {
         // Attack player at that point of the animation
-        print("Should attack");
         Enemy->Attack();
     }
 }

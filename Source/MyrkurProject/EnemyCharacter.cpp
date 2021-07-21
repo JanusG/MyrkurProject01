@@ -93,7 +93,6 @@ void AEnemyCharacter::InitAttack()
 		UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
-			print("Throw animation");
 			float montageStatus = AnimInstance->Montage_Play(TrowingAnim, 1.0f);
 		}
 	}

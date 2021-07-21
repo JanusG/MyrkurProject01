@@ -47,7 +47,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Set damage to Actor */
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	/** Players full Health */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)

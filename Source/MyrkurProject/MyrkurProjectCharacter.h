@@ -48,7 +48,7 @@ protected:
 	virtual void BeginPlay();
 
 	/** Set damage to Actor */
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void Tick(float DeltaTime) override;
 public:
@@ -87,6 +87,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	float RunSpeed = 0.5;
 
+	/** Check if red danger flash is on */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
+	bool isFlashingDanger;
+
 	/** If character is in the danger zone, damage the player and play the animation on the UI */
 	UFUNCTION(BlueprintPure, Category = Health)
 	bool PlayDangerFlash();
@@ -99,11 +103,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = Health)
 	FText GetHealthText();
 
-	/** Update players health */
+	/** Update players health
+	 * @param HealthChange Ammount og health that should change, damage or heal
+	 */
 	UFUNCTION(BlueprintCallable, Category = Health)
 	void UpdateHealth(float HealthChange);
 
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	/** Max ammunition that the player has */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay)
 	int MaxBallAmmount;
 
