@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Kismet/GameplayStatics.h"
 #include "MyrkurProjectGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "MyrkurProjectHUD.h"
 #include "MyrkurProjectCharacter.h"
 #include "UObject/ConstructorHelpers.h"

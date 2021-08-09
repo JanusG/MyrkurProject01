@@ -29,6 +29,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	/** pointer reference to the playerCharacter */
 	AMyrkurProjectCharacter* PlayerCharacter;
 
 	/** Returns the current playing state */
@@ -42,7 +43,7 @@ public:
 	TSubclassOf<class UUserWidget> HUDWidgetClass;
 
 	UPROPERTY(EditAnywhere)
-	class UUserWidget* CurrentWidget;
+	class UUserWidget* MainMenuWidget;
 
 private:
 	/** Keeps track of current state of game */

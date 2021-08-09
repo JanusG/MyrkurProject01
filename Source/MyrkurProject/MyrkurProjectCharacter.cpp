@@ -17,6 +17,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "InteractiveObject.h"
+#include "LevelSequencePlayer.h"
 #include "math.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -139,6 +140,8 @@ void AMyrkurProjectCharacter::BeginPlay()
 float AMyrkurProjectCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	UpdateHealth(-DamageAmount);
+
+	playDamageSequence();
 	return 0.0f;
 }
 
@@ -408,3 +411,31 @@ void AMyrkurProjectCharacter::SetDamageState()
 	InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void AMyrkurProjectCharacter::playDamageSequence()
+{
+
+	//Disable controls for the animation
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	this->DisableInput(PlayerController);
+
+	// set the sequence to be playable
+	if(DamageAnimSequence != nullptr)
+	{
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DamageAnimSequence, FMovieSceneSequencePlaybackSettings(), DamageSeqActor);
+	}
+
+	// Play sequence if everything worked
+	if(SequencePlayer)
+	{
+		SequencePlayer->Play();
+	}
+
+	FTimerHandle timeHandler;
+	GetWorldTimerManager().SetTimer(timeHandler, this, &AMyrkurProjectCharacter::EnablePlayerInput, 1.0f, false);
+}
+
+void AMyrkurProjectCharacter::EnablePlayerInput()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	this->EnableInput(PlayerController);
+}

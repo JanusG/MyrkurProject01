@@ -35,6 +35,8 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	damageAmmount = 34.0f;
 }
 
 void AMyrkurProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

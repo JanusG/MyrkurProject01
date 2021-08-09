@@ -14,7 +14,10 @@ class UAnimMontage;
 class USoundBase;
 class UCurveFloat;
 class UTimelineComponent;
+class ULevelSequence;
+class ULevelSequencePlayer;
 class AInteractiveObject;
+class ALevelSequenceActor;
 
 UCLASS(config=Game)
 class AMyrkurProjectCharacter : public ACharacter
@@ -59,6 +62,14 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	/** Sequence asset for player taking damage */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
+	ULevelSequence* DamageAnimSequence;
+
+	/** Sequence actor for player taking damage */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
+	ALevelSequenceActor* DamageSeqActor;
 
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -110,7 +121,7 @@ public:
 	void UpdateHealth(float HealthChange);
 
 	/** Max ammunition that the player has */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int MaxBallAmmount;
 
 	/** Set if Player is taking AOE damage */
@@ -143,9 +154,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	float PercentageHealth;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
-	int NumberOfBallsLeft;
-
 	/** toggle if player is on the wrong side */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	bool ShowDangerFlash;
@@ -154,9 +162,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	bool bCanTickDamage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay)
+	int NumberOfBallsLeft;
+
 	/** Set if player can shoot or not */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
 	bool bCanShoot;
+
+	/** Sequence player to play any levelSequence*/
+	UPROPERTY()
+    ULevelSequencePlayer* SequencePlayer;
 	
 	/** Fires a projectile. */
 	void OnFire();
@@ -195,6 +210,9 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	void playDamageSequence();
+
+	void EnablePlayerInput();
 	
 protected:
 	// APawn interface
