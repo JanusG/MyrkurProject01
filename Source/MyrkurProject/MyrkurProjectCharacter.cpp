@@ -413,29 +413,40 @@ void AMyrkurProjectCharacter::SetDamageState()
 
 void AMyrkurProjectCharacter::playDamageSequence()
 {
-
+	print("Play sequence");
 	//Disable controls for the animation
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	this->DisableInput(PlayerController);
+	
+	this->bUseControllerRotationPitch = false;
+	this->bUseControllerRotationYaw = false;
+	this->bUseControllerRotationRoll = false;
+
+	// this->DisableInput(PlayerController);
 
 	// set the sequence to be playable
 	if(DamageAnimSequence != nullptr)
 	{
+		print("Damage Sequence set");
 		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DamageAnimSequence, FMovieSceneSequencePlaybackSettings(), DamageSeqActor);
 	}
 
 	// Play sequence if everything worked
 	if(SequencePlayer)
 	{
+		print("Playing Sequence");
 		SequencePlayer->Play();
 	}
 
 	FTimerHandle timeHandler;
-	GetWorldTimerManager().SetTimer(timeHandler, this, &AMyrkurProjectCharacter::EnablePlayerInput, 1.0f, false);
+	GetWorldTimerManager().SetTimer(timeHandler, this, &AMyrkurProjectCharacter::EnablePlayerInput, 0.4667f, false);
 }
 
 void AMyrkurProjectCharacter::EnablePlayerInput()
 {
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	this->EnableInput(PlayerController);
+	
+	this->bUseControllerRotationPitch = true;
+	this->bUseControllerRotationYaw = true;
+	this->bUseControllerRotationRoll = true;
 }

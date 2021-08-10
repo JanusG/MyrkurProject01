@@ -14,9 +14,16 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 {
 	// Use a sphere as a simple collision representation
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	CollisionComp->InitSphereRadius(5.0f);
+	CollisionComp->InitSphereRadius(72.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &AMyrkurProjectProjectile::OnHit);		// set up a notification for when this component hits something blocking
+
+
+	// Set up for grab distance trigger
+	GrabDistance = CreateDefaultSubobject<USphereComponent>(TEXT("GrabTrigger"));
+	GrabDistance->InitSphereRadius(5.0f);
+	GrabDistance->BodyInstance.SetCollisionProfileName("Trigger");
+	GrabDistance->OnComponentBeginOverlap.AddDynamic(this, &AMyrkurProjectProjectile::OnOverlapBegin);
 
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
@@ -25,18 +32,18 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 	// Set as root component
 	RootComponent = CollisionComp;
 
+	damageAmmount = 34.0f;
+
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 2100.f;
-	ProjectileMovement->MaxSpeed = 2100.f;
+	ProjectileMovement->InitialSpeed = 3100.f;
+	ProjectileMovement->MaxSpeed = 3100.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
-	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
-
-	damageAmmount = 34.0f;
+	// Die after 2 seconds by default
+	InitialLifeSpan = 2.0f;
 }
 
 void AMyrkurProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -51,6 +58,15 @@ void AMyrkurProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Other
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
 		//Add damage to actor hit
-		UGameplayStatics::ApplyPointDamage(OtherActor, 34.0f, GetActorLocation(), Hit, nullptr, this, BluntDamage);
+		UGameplayStatics::ApplyPointDamage(OtherActor, damageAmmount, GetActorLocation(), Hit, nullptr, this, BluntDamage);
+	}
+}
+
+void AMyrkurProjectProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	print("Trigger");
+	if (OtherActor != nullptr && (OtherActor != this))
+	{
+		printf("Hitting %s", *OtherActor->GetName());
 	}
 }

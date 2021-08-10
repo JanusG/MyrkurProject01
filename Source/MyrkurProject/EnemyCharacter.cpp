@@ -93,7 +93,7 @@ void AEnemyCharacter::InitAttack()
 		UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
-			float montageStatus = AnimInstance->Montage_Play(TrowingAnim, 1.0f);
+			float montageStatus = AnimInstance->Montage_Play(TrowingAnim, 1.6f);
 		}
 	}
 
@@ -114,7 +114,7 @@ void AEnemyCharacter::Attack()
 			float distance = FVector::Dist(OurPawn->GetActorLocation(), RootComponent->GetRelativeLocation());
 
 			// set a multiplyer for the arc and the distance, first to lower the dist and then multiply to get greater variance
-			float arc = (distance * 0.004f) * 1.45f;
+			float arc = (distance * 0.002f) * 1.2;
 
 			// Set the spawn velocity
 			const FRotator SpawnRotation = GetControlRotation() + FRotator(arc,0.0f, 0.0f);
