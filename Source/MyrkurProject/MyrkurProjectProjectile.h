@@ -20,7 +20,7 @@ class AMyrkurProjectProjectile : public AActor
 
 	/** Signal to player if player is able to grab the ball */
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
-	USphereComponent* GrabDistance;
+	USphereComponent* TriggerSphere;
 
 	/** Projectile movement component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -47,7 +47,7 @@ public:
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 
 	/** Returns GrabDistance subobject **/
-	USphereComponent* GetGrabDistance() const { return GrabDistance; }
+	USphereComponent* GetGrabDistance() const { return TriggerSphere; }
 
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }

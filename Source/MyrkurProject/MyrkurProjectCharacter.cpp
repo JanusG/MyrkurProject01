@@ -416,7 +416,6 @@ void AMyrkurProjectCharacter::ShowInfoWidget()
 
 void AMyrkurProjectCharacter::playDamageSequence()
 {
-	print("Play sequence");
 	//Disable controls for the animation
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	
@@ -429,14 +428,12 @@ void AMyrkurProjectCharacter::playDamageSequence()
 	// set the sequence to be playable
 	if(DamageAnimSequence != nullptr)
 	{
-		print("Damage Sequence set");
 		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DamageAnimSequence, FMovieSceneSequencePlaybackSettings(), DamageSeqActor);
 	}
 
 	// Play sequence if everything worked
 	if(SequencePlayer)
 	{
-		print("Playing Sequence");
 		SequencePlayer->Play();
 	}
 

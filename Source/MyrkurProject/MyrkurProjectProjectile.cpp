@@ -14,16 +14,17 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 {
 	// Use a sphere as a simple collision representation
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	CollisionComp->InitSphereRadius(72.0f);
+	CollisionComp->InitSphereRadius(24.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &AMyrkurProjectProjectile::OnHit);		// set up a notification for when this component hits something blocking
 
 
 	// Set up for grab distance trigger
-	GrabDistance = CreateDefaultSubobject<USphereComponent>(TEXT("GrabTrigger"));
-	GrabDistance->InitSphereRadius(5.0f);
-	GrabDistance->BodyInstance.SetCollisionProfileName("Trigger");
-	GrabDistance->OnComponentBeginOverlap.AddDynamic(this, &AMyrkurProjectProjectile::OnOverlapBegin);
+	TriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerSphere"));
+	TriggerSphere->InitSphereRadius(80.0f);
+	TriggerSphere->BodyInstance.SetCollisionProfileName("Trigger");
+	TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyrkurProjectProjectile::OnOverlapBegin);
+	TriggerSphere->SetupAttachment(RootComponent);
 
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
@@ -64,9 +65,8 @@ void AMyrkurProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Other
 
 void AMyrkurProjectProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	print("Trigger");
-	if (OtherActor != nullptr && (OtherActor != this))
+	if (OtherActor && (OtherActor != this) && OtherComp) 
 	{
-		printf("Hitting %s", *OtherActor->GetName());
+		print("overlap begin");
 	}
 }
