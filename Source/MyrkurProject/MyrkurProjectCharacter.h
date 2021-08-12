@@ -124,6 +124,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int MaxBallAmmount;
 
+	
+	/** Show the main player wiget */
+	UFUNCTION(BlueprintCallable)
+	void ShowInfoWidget();
+
 	/** Set if Player is taking AOE damage */
 	UFUNCTION()
 	void SetDamageState();

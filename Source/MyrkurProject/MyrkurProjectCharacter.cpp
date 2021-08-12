@@ -110,28 +110,6 @@ void AMyrkurProjectCharacter::BeginPlay()
 		//ShotTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
 		ShotTimeline->RegisterComponent();
 	}
-
-
-	// Show UI components
-	if (HelpWidgetClass) 
-	{
-		// Initialize the info UI and set parameters 
-		InfoWidget = CreateWidget<UUserWidget>(GetWorld(), HelpWidgetClass);
-
-		if (InfoWidget)
-		{
-			InfoWidget->AddToViewport();
-			// Hide Info text that should not be shown
-			InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
-			InfoWidget->GetWidgetFromName("TextDeath")->SetVisibility(ESlateVisibility::Hidden);
-			InfoWidget->GetWidgetFromName("BlurDeath")->SetVisibility(ESlateVisibility::Hidden);
-			InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
-
-			// Hidden while the function isn't ready so not to confuse the player
-			// InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
-
-		}
-	}
 	
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGrip"));
@@ -409,6 +387,31 @@ void AMyrkurProjectCharacter::SetDamageState()
 		return;
 	}
 	InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AMyrkurProjectCharacter::ShowInfoWidget()
+{
+	
+	// Show UI components
+	if (HelpWidgetClass) 
+	{
+		// Initialize the info UI and set parameters 
+		InfoWidget = CreateWidget<UUserWidget>(GetWorld(), HelpWidgetClass);
+
+		if (InfoWidget)
+		{
+			InfoWidget->AddToViewport();
+			// Hide Info text that should not be shown
+			InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
+			InfoWidget->GetWidgetFromName("TextDeath")->SetVisibility(ESlateVisibility::Hidden);
+			InfoWidget->GetWidgetFromName("BlurDeath")->SetVisibility(ESlateVisibility::Hidden);
+			InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
+
+			// Hidden while the function isn't ready so not to confuse the player
+			// InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
+
+		}
+	}
 }
 
 void AMyrkurProjectCharacter::playDamageSequence()
