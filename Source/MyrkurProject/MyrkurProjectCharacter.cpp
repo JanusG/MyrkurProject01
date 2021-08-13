@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 // Help print debug strings
-#define print(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, text)
-#define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, FString::Printf(TEXT(text), fstring))
+#define print(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Orange, text)
+#define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Orange, FString::Printf(TEXT(text), fstring))
 
 #include "MyrkurProjectCharacter.h"
 #include "MyrkurProjectProjectile.h"
@@ -66,6 +66,13 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	BallMesh->CastShadow = false;
 	//Ball->SetupAttachment(Mesh1P);
 	BallMesh->SetupAttachment(Mesh1P, TEXT("LeftGrip"));
+
+	// Set up for grab distance trigger
+	TriggerCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("TriggerSphere"));
+	TriggerCapsule->InitCapsuleSize(1.0f, 1.0f);
+	TriggerCapsule->BodyInstance.SetCollisionProfileName("Trigger");
+	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AMyrkurProjectCharacter::OnOverlapBegin);
+	TriggerCapsule->SetupAttachment(RootComponent);
 
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	FP_MuzzleLocation->SetupAttachment(FP_Gun);
@@ -450,3 +457,30 @@ void AMyrkurProjectCharacter::EnablePlayerInput()
 	this->bUseControllerRotationYaw = true;
 	this->bUseControllerRotationRoll = true;
 }
+
+
+void AMyrkurProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	//Run if player has no ball in hand then the player has a chance of catching
+	if(NumberOfBallsLeft <= 0)
+	{
+		//TODO:: get forward wector of both items and compare if they are facing each other with dot product
+		if (OtherActor && (OtherActor != this) && OtherComp) 
+		{
+			FVector BallVector = OtherActor->GetActorForwardVector();
+			FVector PlayerVector = this->GetActorForwardVector();
+
+			float Dot = FVector::DotProduct(BallVector, PlayerVector);
+			
+			//if the player is looking at the ball then he can catch it
+			if(Dot < -0.980f)
+			{
+				//TOTO:: Play sound to notify the player that he can catch the ball
+				//TODO:: if input is recieved before the ball hits or leaves hitbox, Delete the incoming ball and add it to the player.
+				print("I can catch");
+			}
+		}
+	}
+}
+
+	

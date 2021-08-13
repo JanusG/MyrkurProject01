@@ -61,10 +61,16 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 	if (CurrentHealth <= 0)
 	{
-		// Set ragdoll effect
-		CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
-		CMesh->SetSimulatePhysics(true);
-
+		// Play death animation
+		if (DyingAnim)
+		{
+			// Get the animation object for the model
+			UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
+			if (AnimInstance != nullptr)
+			{
+				float montageStatus = AnimInstance->Montage_Play(DyingAnim, 1.0f);
+			}
+		}
 		// Stop Actor movements
 		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
 		if (CharacterComp)
@@ -73,8 +79,19 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 			CharacterComp->DisableMovement();
 			CharacterComp->SetComponentTickEnabled(false);
 		}
+
+		// Set Ragdoll after animation has run
+		FTimerHandle timeHandler;
+		GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::SetCharacterRagdoll, 2.5f, false);
 	}
 	return 0.0f;
+}
+
+void AEnemyCharacter::SetCharacterRagdoll()
+{
+	// Set ragdoll effect
+		CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+		CMesh->SetSimulatePhysics(true);
 }
 
 // Called every frame

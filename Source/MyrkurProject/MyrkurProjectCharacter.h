@@ -10,6 +10,7 @@ class UInputComponent;
 class USkeletalMeshComponent;
 class USceneComponent;
 class UCameraComponent;
+class UCapsuleComponent;
 class UAnimMontage;
 class USoundBase;
 class UCurveFloat;
@@ -35,6 +36,10 @@ class AMyrkurProjectCharacter : public ACharacter
 	/** Ball Mesh: Location at hands of Mesh1P */
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USkeletalMeshComponent* BallMesh;
+	
+	/** Signal to player if player is able to grab the ball */
+	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
+	UCapsuleComponent* TriggerCapsule;
 
 	/** Location on gun mesh where projectiles should spawn. */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
@@ -54,6 +59,7 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void Tick(float DeltaTime) override;
+
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -86,7 +92,10 @@ public:
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UAnimMontage* FireAnimation;
-
+	
+	/** DEPREICADED
+	 *  time curve for shots 
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UCurveFloat* ShotCurve;
 
@@ -124,7 +133,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int MaxBallAmmount;
 
-	
 	/** Show the main player wiget */
 	UFUNCTION(BlueprintCallable)
 	void ShowInfoWidget();
@@ -132,6 +140,10 @@ public:
 	/** Set if Player is taking AOE damage */
 	UFUNCTION()
 	void SetDamageState();
+	
+	/** Overlap for trigger capsule */
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
 	// Reference UMG Asset in the Editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -231,5 +243,8 @@ public:
 	USkeletalMeshComponent* GetBallMesh() const { return BallMesh; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+	/** Returns TriggerCapsule subobject **/
+	UCapsuleComponent* GetTriggerCapsule() const { return TriggerCapsule; }
+
 };
 

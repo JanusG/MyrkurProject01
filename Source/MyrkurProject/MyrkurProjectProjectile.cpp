@@ -18,14 +18,6 @@ AMyrkurProjectProjectile::AMyrkurProjectProjectile()
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &AMyrkurProjectProjectile::OnHit);		// set up a notification for when this component hits something blocking
 
-
-	// Set up for grab distance trigger
-	TriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerSphere"));
-	TriggerSphere->InitSphereRadius(80.0f);
-	TriggerSphere->BodyInstance.SetCollisionProfileName("Trigger");
-	TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyrkurProjectProjectile::OnOverlapBegin);
-	TriggerSphere->SetupAttachment(RootComponent);
-
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
@@ -63,10 +55,3 @@ void AMyrkurProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Other
 	}
 }
 
-void AMyrkurProjectProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-	if (OtherActor && (OtherActor != this) && OtherComp) 
-	{
-		print("overlap begin");
-	}
-}

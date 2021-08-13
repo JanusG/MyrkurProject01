@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	float CurrentHealth;
 
+	/** Set player Ragdoll*/
+	void SetCharacterRagdoll();
+
 public:	
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
