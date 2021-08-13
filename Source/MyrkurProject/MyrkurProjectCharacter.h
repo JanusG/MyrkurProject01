@@ -77,6 +77,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
 	ALevelSequenceActor* DamageSeqActor;
 
+	UPROPERTY()
+	AActor* CatchActor;
+
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector GunOffset;
@@ -141,9 +144,13 @@ public:
 	UFUNCTION()
 	void SetDamageState();
 	
-	/** Overlap for trigger capsule */
+	/** Overlap begin for trigger capsule */
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	/** Overlap end for trigger capsule */
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	// Reference UMG Asset in the Editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -185,6 +192,10 @@ protected:
 	/** Set if player can shoot or not */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
 	bool bCanShoot;
+
+	/** Set if player can catch the ball or not */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
+	bool bCanCatch;
 
 	/** Sequence player to play any levelSequence*/
 	UPROPERTY()
@@ -230,6 +241,9 @@ protected:
 	void playDamageSequence();
 
 	void EnablePlayerInput();
+
+	/** If the player can catch the ball add it to the hand */
+	void CatchBall();
 	
 protected:
 	// APawn interface

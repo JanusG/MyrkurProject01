@@ -72,6 +72,7 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	TriggerCapsule->InitCapsuleSize(1.0f, 1.0f);
 	TriggerCapsule->BodyInstance.SetCollisionProfileName("Trigger");
 	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AMyrkurProjectCharacter::OnOverlapBegin);
+	TriggerCapsule->OnComponentEndOverlap.AddDynamic(this, &AMyrkurProjectCharacter::OnOverlapEnd);
 	TriggerCapsule->SetupAttachment(RootComponent);
 
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
@@ -82,6 +83,7 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	GunOffset = FVector(100.0f, 40.0f, 5.0f);
 
 	bCanShoot = true;
+	bCanCatch = false;
 
 	MaxBallAmmount = 5;
 	NumberOfBallsLeft = MaxBallAmmount;
@@ -126,8 +128,13 @@ float AMyrkurProjectCharacter::TakeDamage(float DamageAmount, FDamageEvent const
 {
 	UpdateHealth(-DamageAmount);
 
+	// play animation
 	playDamageSequence();
-	return 0.0f;
+	
+	// Set so the player cant catch the ball after he gets hit
+	bCanCatch = false;
+
+	return 1.0f;
 }
 
 void AMyrkurProjectCharacter::Tick(float DeltaTime)
@@ -308,6 +315,11 @@ void AMyrkurProjectCharacter::ActionPress()
 	{
 		InteractiveObject->Interact();
 	}
+
+	if(bCanCatch)
+	{
+		CatchBall();
+	}
 }
 
 void AMyrkurProjectCharacter::SetBallsToMax()
@@ -477,10 +489,40 @@ void AMyrkurProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp
 			{
 				//TOTO:: Play sound to notify the player that he can catch the ball
 				//TODO:: if input is recieved before the ball hits or leaves hitbox, Delete the incoming ball and add it to the player.
+				CatchActor = OtherActor;
+				bCanCatch = true;
 				print("I can catch");
 			}
 		}
 	}
 }
 
+void AMyrkurProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if(bCanCatch)
+	{
+		OtherActor = nullptr;
+		bCanCatch = false;
+	}
+}
+
+void AMyrkurProjectCharacter::CatchBall() {
+
+	//if input is recieved before the ball hits or leaves hitbox, Delete the incoming ball and add it to the player.
+	if(bCanCatch && CatchActor != nullptr)
+	{
+		FVector BallVector = CatchActor->GetActorForwardVector();
+		FVector PlayerVector = this->GetActorForwardVector();
+
+		float Dot = FVector::DotProduct(BallVector, PlayerVector);
+		// Check if the ball is behind the player befor catching		
+		if(Dot < -0.600f)
+		{
+			SetBallAmmount(1);
+			CatchActor->Destroy();
+			bCanCatch = false;
+		}
+		
+	}
+}
 	
