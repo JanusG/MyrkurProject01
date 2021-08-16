@@ -142,13 +142,13 @@ public:
 	int MaxBallAmmount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	float dmgPitch = 10;
+	float dmgPitch = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	float dmgYaw = 10;
+	float dmgYaw = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	float dmgRoll = 10;
+	float dmgRoll = -0.5;
 
 	/** Show the main player wiget */
 	UFUNCTION(BlueprintCallable)

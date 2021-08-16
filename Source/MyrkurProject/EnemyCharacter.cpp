@@ -90,7 +90,7 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 		// Set Ragdoll after animation has run
 		FTimerHandle timeHandler;
-		GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::SetCharacterRagdoll, 2.5f, false);
+		//GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::SetCharacterRagdoll, 2.5f, false);
 	}
 	else 
 	{
@@ -119,6 +119,16 @@ void AEnemyCharacter::SetCharacterRagdoll()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+void AEnemyCharacter::Reset()
+{
+	print("This ran from code");
+}
+
+void AEnemyCharacter::PlayerLost()
+{
 
 }
 

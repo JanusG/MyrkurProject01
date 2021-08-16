@@ -64,6 +64,10 @@ protected:
 	/** Set player Ragdoll*/
 	void SetCharacterRagdoll();
 
+	void Reset() override;
+
+	/** Run when the player has lost */
+	void PlayerLost();
 public:	
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
