@@ -19,6 +19,7 @@ class ULevelSequence;
 class ULevelSequencePlayer;
 class AInteractiveObject;
 class ALevelSequenceActor;
+class AMyrkurProjectGameMode;
 
 UCLASS(config=Game)
 class AMyrkurProjectCharacter : public ACharacter
@@ -96,6 +97,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UAnimMontage* FireAnimation;
 	
+	/** Sound to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	USoundBase* CatchBallSound;
+
 	/** DEPREICADED
 	 *  time curve for shots 
 	 */
@@ -136,6 +141,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int MaxBallAmmount;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float dmgPitch = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float dmgYaw = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float dmgRoll = 10;
+
 	/** Show the main player wiget */
 	UFUNCTION(BlueprintCallable)
 	void ShowInfoWidget();
@@ -159,12 +173,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	UUserWidget* InfoWidget;
 
+	// Reference UMG Asset in the Editor
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	TSubclassOf<UUserWidget> PauseWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* PauseWidget;
+
 	UPROPERTY(EditAnywhere)
 	AInteractiveObject* InteractiveObject;
 
 	/** Give the player max ammount of balls */
 	void SetBallsToMax();
 protected:
+
+	UPROPERTY()
+	AMyrkurProjectGameMode* GameMode;
 
 	/** Players full Health */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
@@ -197,6 +221,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay)
 	bool bCanCatch;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay)
+	bool bTakingDamage;
+
+	UPROPERTY()
+	FRotator PlayerInitRotation;
+	
 	/** Sequence player to play any levelSequence*/
 	UPROPERTY()
     ULevelSequencePlayer* SequencePlayer;
@@ -219,6 +249,9 @@ protected:
 
 	/** Handles event of what happenes if Action button is pressed */
 	void ActionPress();
+
+	/** Handles game pause */
+	void PauseMenu();
 
 	/** 
 	* Sets the ammount of balls for the player

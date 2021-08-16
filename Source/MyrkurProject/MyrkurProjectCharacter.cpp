@@ -6,6 +6,7 @@
 
 #include "MyrkurProjectCharacter.h"
 #include "MyrkurProjectProjectile.h"
+#include "MyrkurProjectGameMode.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -78,14 +79,14 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	FP_MuzzleLocation->SetupAttachment(FP_Gun);
 	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
-
+	
 	// Default offset from the character location for projectiles to spawn
 	GunOffset = FVector(100.0f, 40.0f, 5.0f);
 
 	bCanShoot = true;
 	bCanCatch = false;
 
-	MaxBallAmmount = 5;
+	MaxBallAmmount = 3;
 	NumberOfBallsLeft = MaxBallAmmount;
 
 	FullHealth = 100.0f;
@@ -120,6 +121,12 @@ void AMyrkurProjectCharacter::BeginPlay()
 		ShotTimeline->RegisterComponent();
 	}
 	
+	// init GameMode variable here for future references
+	GameMode = Cast<AMyrkurProjectGameMode>(GetWorld()->GetAuthGameMode());
+
+	// Show main HUD
+	ShowInfoWidget();
+
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGrip"));
 }
@@ -154,23 +161,27 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 	FVector End = ((ForwardVector * 200.f) + Start);
 	FCollisionQueryParams CollisionParams;
 
-	// Check if interactable component is in front of player, and if so toggle info message.
-	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
+	if(InfoWidget) 
 	{
-		if (Hit.bBlockingHit)
+		// Check if interactable component is in front of player, and if so toggle info message.
+		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
 		{
-			if (Hit.GetActor()->GetClass()->IsChildOf(AInteractiveObject::StaticClass()))
+			if (Hit.bBlockingHit)
 			{
-				InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Visible);
-				InteractiveObject = Cast<AInteractiveObject>(Hit.GetActor());
+				if (Hit.GetActor()->GetClass()->IsChildOf(AInteractiveObject::StaticClass()))
+				{
+					InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Visible);
+					InteractiveObject = Cast<AInteractiveObject>(Hit.GetActor());
+				}
 			}
 		}
+		else
+		{
+			InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
+			InteractiveObject = NULL;
+		}
 	}
-	else
-	{
-		InfoWidget->GetWidgetFromName("textInteract")->SetVisibility(ESlateVisibility::Hidden);
-		InteractiveObject = NULL;
-	}
+	
 
 	// if character can be damaged by AOE the set the damage and show danger screen
 	if (bCanTickDamage)
@@ -178,6 +189,15 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 		UpdateHealth(-0.25f);
 	}
 
+	// if the player has gotten shot then play short animation
+	if(bTakingDamage)
+	{	
+		// rotator for the animation, values are finetuned in blueprint
+		FRotator NewRotation = FRotator(dmgPitch, dmgYaw, dmgRoll);
+		FQuat QuatRotation = FQuat(NewRotation);
+
+		AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -204,6 +224,9 @@ void AMyrkurProjectCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AMyrkurProjectCharacter::Run);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &AMyrkurProjectCharacter::StopRuning);
+
+	// Bind pause event
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMyrkurProjectCharacter::PauseMenu);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -322,6 +345,28 @@ void AMyrkurProjectCharacter::ActionPress()
 	}
 }
 
+void AMyrkurProjectCharacter::PauseMenu()
+{
+	
+	APlayerController* PController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+	if (PController != nullptr)
+	{
+		PController->SetPause(true);
+		PController->bShowMouseCursor = true;
+		PController->bEnableMouseOverEvents = true;
+		PController->bEnableClickEvents = true;
+	}
+	if (PauseWidgetClass) 
+	{
+		// Initialize pause widget
+		PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass);
+		if (PauseWidget)	
+		{
+			PauseWidget->AddToViewport();
+		}
+	}
+}
+
 void AMyrkurProjectCharacter::SetBallsToMax()
 {
 		SetBallAmmount(MaxBallAmmount);
@@ -378,14 +423,19 @@ void AMyrkurProjectCharacter::UpdateHealth(float HealthChange)
 	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, FullHealth);
 	PercentageHealth = CurrentHealth / FullHealth;
 
-	// Pause the game if you died and show sime kind of death screen
+	// Pause the game if you died and show death animation
 	if (CurrentHealth <= 0)
 	{
 		APlayerController* PController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 
 		if (PController != nullptr)
 		{
-			PController->SetPause(true);
+			//PController->SetPause(true);
+		}
+
+		if(GameMode) 
+		{
+			GameMode->AddGamePoint(false);
 		}
 
 		// Show info about your death
@@ -416,7 +466,6 @@ void AMyrkurProjectCharacter::ShowInfoWidget()
 	{
 		// Initialize the info UI and set parameters 
 		InfoWidget = CreateWidget<UUserWidget>(GetWorld(), HelpWidgetClass);
-
 		if (InfoWidget)
 		{
 			InfoWidget->AddToViewport();
@@ -435,39 +484,25 @@ void AMyrkurProjectCharacter::ShowInfoWidget()
 
 void AMyrkurProjectCharacter::playDamageSequence()
 {
-	//Disable controls for the animation
+	//disable controls while animation is being played
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	DisableInput(PlayerController);
 	
-	this->bUseControllerRotationPitch = false;
-	this->bUseControllerRotationYaw = false;
-	this->bUseControllerRotationRoll = false;
-
-	// this->DisableInput(PlayerController);
-
-	// set the sequence to be playable
-	if(DamageAnimSequence != nullptr)
-	{
-		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DamageAnimSequence, FMovieSceneSequencePlaybackSettings(), DamageSeqActor);
-	}
-
-	// Play sequence if everything worked
-	if(SequencePlayer)
-	{
-		SequencePlayer->Play();
-	}
+	bTakingDamage = true;
+	PlayerInitRotation = GetActorRotation();
 
 	FTimerHandle timeHandler;
-	GetWorldTimerManager().SetTimer(timeHandler, this, &AMyrkurProjectCharacter::EnablePlayerInput, 0.4667f, false);
+	GetWorldTimerManager().SetTimer(timeHandler, this, &AMyrkurProjectCharacter::EnablePlayerInput, 0.25f, false);
 }
 
 void AMyrkurProjectCharacter::EnablePlayerInput()
 {
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	this->EnableInput(PlayerController);
-	
-	this->bUseControllerRotationPitch = true;
-	this->bUseControllerRotationYaw = true;
-	this->bUseControllerRotationRoll = true;
+	EnableInput(PlayerController);
+
+	//Reset rotation to the same as it was before hit
+	SetActorRotation(PlayerInitRotation);
+	bTakingDamage = false;
 }
 
 
@@ -487,11 +522,14 @@ void AMyrkurProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp
 			//if the player is looking at the ball then he can catch it
 			if(Dot < -0.980f)
 			{
-				//TOTO:: Play sound to notify the player that he can catch the ball
+				//Play sound to notify the player that he can catch the ball
+				if (CatchBallSound != nullptr)
+				{
+					UGameplayStatics::PlaySoundAtLocation(this, CatchBallSound, GetActorLocation());
+				}
 				//TODO:: if input is recieved before the ball hits or leaves hitbox, Delete the incoming ball and add it to the player.
 				CatchActor = OtherActor;
 				bCanCatch = true;
-				print("I can catch");
 			}
 		}
 	}
@@ -513,7 +551,7 @@ void AMyrkurProjectCharacter::CatchBall() {
 	{
 		FVector BallVector = CatchActor->GetActorForwardVector();
 		FVector PlayerVector = this->GetActorForwardVector();
-
+		
 		float Dot = FVector::DotProduct(BallVector, PlayerVector);
 		// Check if the ball is behind the player befor catching		
 		if(Dot < -0.600f)
@@ -525,4 +563,5 @@ void AMyrkurProjectCharacter::CatchBall() {
 		
 	}
 }
+
 	

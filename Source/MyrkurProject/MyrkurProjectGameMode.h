@@ -12,7 +12,9 @@ class AMyrkurProjectCharacter;
 UENUM()
 enum class EGamePlayState
 {
+	ENewRound,
 	EPlaying,
+	EPaused,
 	EGameOver,
 	EUnknown
 };
@@ -33,17 +35,39 @@ public:
 	AMyrkurProjectCharacter* PlayerCharacter;
 
 	/** Returns the current playing state */
-	UFUNCTION(BlueprintPure, Category = "Health")
+	UFUNCTION(BlueprintPure)
 	EGamePlayState GetCurrentState() const;
 
 	/** Sets a new playing state */
 	void SetCurrentState(EGamePlayState NewState);
 
+	/** Set state to begin play */
+	UFUNCTION(BlueprintCallable)
+	void SetStateBeginRound();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> HUDWidgetClass;
 
-	UPROPERTY(EditAnywhere)
-	class UUserWidget* MainMenuWidget;
+	/** 
+	 * Set point to either the blu or red team
+	 * @param isBlueTeam if true then blue gets the point, false the red team gets the point
+	 */
+	UFUNCTION(BlueprintCallable)
+	void AddGamePoint(bool isBlueTeam);
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = Gameplay)
+	int FirstToWin = 3;
+
+	UPROPERTY(BlueprintReadOnly, Category = Gameplay)
+	int numRoundsPlayed = 1;
+
+	UPROPERTY(BlueprintReadOnly, Category = Gameplay)
+	int BlueScore = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = Gameplay)
+	int RedScore = 0;
 
 private:
 	/** Keeps track of current state of game */
