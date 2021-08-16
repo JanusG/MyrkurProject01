@@ -9,6 +9,7 @@
 #include "MyrkurProjectHUD.h"
 #include "MyrkurProjectCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "GameFramework/Controller.h"
 
 AMyrkurProjectGameMode::AMyrkurProjectGameMode()
 	: Super()
@@ -81,8 +82,8 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			// if game is finished go to game over state.
 
 			// if game is not finished start a new round
-			RestartPlayerAtPlayerStart(GetWorld()->GetFirstPlayerController(), PlayerCharacter);
-			//UGameplayStatics::OpenLevel(GetWorld(), "Arena");
+			ResetLevel();
+			GetWorld()->GetAuthGameMode()->RestartPlayer(GetWorld()->GetFirstPlayerController());
 			//UGameplayStatics::SetGamePaused(this, true);
 		}
 		break;

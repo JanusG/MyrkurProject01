@@ -6,9 +6,10 @@
 
 
 #include "EnemyCharacter.h"
+#include "MyrkurProjectGameMode.h"
+#include "MyrkurProjectProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "MyrkurProjectProjectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
 
@@ -35,7 +36,7 @@ AEnemyCharacter::AEnemyCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	FullHealth = 33.0f;
+	FullHealth = 100.0f;
 	CurrentHealth = FullHealth;
 }
 
@@ -80,9 +81,29 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 			CharacterComp->SetComponentTickEnabled(false);
 		}
 
+		// Add gamepoint to the blue team
+		AMyrkurProjectGameMode* GameMode = Cast<AMyrkurProjectGameMode>(GetWorld()->GetAuthGameMode());
+		if(GameMode) 
+		{
+			GameMode->AddGamePoint(true);
+		}
+
 		// Set Ragdoll after animation has run
 		FTimerHandle timeHandler;
 		GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::SetCharacterRagdoll, 2.5f, false);
+	}
+	else 
+	{
+		// Play trowing animation if the animation is set
+	if (HitgAnim)
+	{
+		// Get the animation object for the model
+		UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			float montageStatus = AnimInstance->Montage_Play(HitgAnim, 1.0f);
+		}
+	}
 	}
 	return 0.0f;
 }

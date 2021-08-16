@@ -38,6 +38,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	UAnimMontage* DyingAnim;
 
+		/** Animation for the enemy to die */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UAnimMontage* HitgAnim;
+
 	/** Update players health */
 	UFUNCTION(BlueprintCallable, Category = Health)
 	void UpdateHealth(float HealthChange);

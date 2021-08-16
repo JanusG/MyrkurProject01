@@ -439,8 +439,8 @@ void AMyrkurProjectCharacter::UpdateHealth(float HealthChange)
 		}
 
 		// Show info about your death
-		InfoWidget->GetWidgetFromName("TextDeath")->SetVisibility(ESlateVisibility::Visible);
-		InfoWidget->GetWidgetFromName("BlurDeath")->SetVisibility(ESlateVisibility::Visible);
+		// InfoWidget->GetWidgetFromName("TextDeath")->SetVisibility(ESlateVisibility::Visible);
+		// InfoWidget->GetWidgetFromName("BlurDeath")->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
