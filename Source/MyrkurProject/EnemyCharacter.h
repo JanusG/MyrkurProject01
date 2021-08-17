@@ -64,13 +64,17 @@ protected:
 	/** Set player Ragdoll*/
 	void SetCharacterRagdoll();
 
-	void Reset() override;
-
 	/** Run when the player has lost */
 	void PlayerLost();
+
+	void AddGamePoint();
+
 public:	
 	/** Called every frame */
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;\
+
+	/** reset pawn without restarting the level */
+	void Reset() override;
 
 	/** Initialize an attack with animation montage */
 	UFUNCTION(BlueprintCallable)

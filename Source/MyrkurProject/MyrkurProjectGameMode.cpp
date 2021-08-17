@@ -80,6 +80,10 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			// check if the game is finished
 
 			// if game is finished go to game over state.
+			if(BlueScore >= FirstToWin || RedScore >= FirstToWin)
+			{
+				SetCurrentState(EGamePlayState::EGameOver);
+			}
 
 			// if game is not finished start a new round
 			ResetLevel();
@@ -94,7 +98,7 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 		break;
 	case EGamePlayState::EGameOver:
 		{
-			//
+			// set winning/ loosing params for each player
 		}
 		break;
 	case EGamePlayState::EUnknown:

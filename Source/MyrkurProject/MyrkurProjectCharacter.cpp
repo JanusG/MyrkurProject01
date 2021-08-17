@@ -333,14 +333,16 @@ void AMyrkurProjectCharacter::SetShotState()
 
 void AMyrkurProjectCharacter::ActionPress()
 {
-
+	print("Pressing interact");
 	if (InteractiveObject != NULL)
-	{
+	{	
+		print("Getting balls");
 		InteractiveObject->Interact();
 	}
 
 	if(bCanCatch)
 	{
+		print("catching ball");
 		CatchBall();
 	}
 }

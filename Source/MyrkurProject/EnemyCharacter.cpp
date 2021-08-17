@@ -62,6 +62,15 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 	if (CurrentHealth <= 0)
 	{
+		// Stop Actor movements
+		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (CharacterComp)
+		{
+			CharacterComp->StopMovementImmediately();
+			CharacterComp->DisableMovement();
+			CharacterComp->SetComponentTickEnabled(false);
+		}
+
 		// Play death animation
 		if (DyingAnim)
 		{
@@ -72,38 +81,22 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 				float montageStatus = AnimInstance->Montage_Play(DyingAnim, 1.0f);
 			}
 		}
-		// Stop Actor movements
-		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
-		if (CharacterComp)
-		{
-			CharacterComp->StopMovementImmediately();
-			CharacterComp->DisableMovement();
-			CharacterComp->SetComponentTickEnabled(false);
-		}
 
-		// Add gamepoint to the blue team
-		AMyrkurProjectGameMode* GameMode = Cast<AMyrkurProjectGameMode>(GetWorld()->GetAuthGameMode());
-		if(GameMode) 
-		{
-			GameMode->AddGamePoint(true);
-		}
-
-		// Set Ragdoll after animation has run
 		FTimerHandle timeHandler;
-		//GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::SetCharacterRagdoll, 2.5f, false);
+		GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::AddGamePoint, 2.5f, false);
 	}
 	else 
 	{
-		// Play trowing animation if the animation is set
-	if (HitgAnim)
-	{
-		// Get the animation object for the model
-		UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
-		if (AnimInstance != nullptr)
+		// If still alive, play hit animation
+		if (HitgAnim)
 		{
-			float montageStatus = AnimInstance->Montage_Play(HitgAnim, 1.0f);
+			// Get the animation object for the model
+			UAnimInstance* AnimInstance = CMesh->GetAnimInstance();
+			if (AnimInstance != nullptr)
+			{
+				float montageStatus = AnimInstance->Montage_Play(HitgAnim, 1.0f);
+			}
 		}
-	}
 	}
 	return 0.0f;
 }
@@ -111,10 +104,19 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void AEnemyCharacter::SetCharacterRagdoll()
 {
 	// Set ragdoll effect
-		CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
-		CMesh->SetSimulatePhysics(true);
+	CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+	CMesh->SetSimulatePhysics(true);
 }
 
+void AEnemyCharacter::AddGamePoint()
+{
+	// Add gamepoint to the blue team
+	AMyrkurProjectGameMode* GameMode = Cast<AMyrkurProjectGameMode>(GetWorld()->GetAuthGameMode());
+	if(GameMode) 
+	{
+		GameMode->AddGamePoint(true);
+	}
+}
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
@@ -124,12 +126,25 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 void AEnemyCharacter::Reset()
 {
-	print("This ran from code");
+	FVector SpawnLocation = FVector(260, -1595, 260);
+	FRotator SpawnRotation = FRotator(0, 0, 0);
+	CurrentHealth = 100;
+	TeleportTo(SpawnLocation, SpawnRotation);
+
+	// Re enable pawn movements
+	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterComp)
+	{
+		CharacterComp->SetMovementMode(EMovementMode::MOVE_Walking);
+		CharacterComp->SetComponentTickEnabled(true);
+	}
 }
 
 void AEnemyCharacter::PlayerLost()
 {
-
+	// Set Ragdoll 
+	FTimerHandle timeHandler;
+	GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::SetCharacterRagdoll, 2.5f, false);
 }
 
 void AEnemyCharacter::InitAttack()
