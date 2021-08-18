@@ -27,6 +27,7 @@ void AInteractGetBalls::Interact()
 	// give player balls if he asks for them, sets them o maximum ammount of balls
 	if (player != NULL)
 	{
+		print("Trying to set balls");
 		player->SetBallsToMax();
 	}
 	

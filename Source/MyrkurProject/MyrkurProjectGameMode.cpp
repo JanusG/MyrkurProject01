@@ -21,8 +21,6 @@ AMyrkurProjectGameMode::AMyrkurProjectGameMode()
 
 	// use our custom HUD class
 	HUDClass = AMyrkurProjectHUD::StaticClass();
-
-	
 }
 
 void AMyrkurProjectGameMode::BeginPlay()
@@ -94,7 +92,6 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			// if game is not finished start a new round
 			ResetLevel();
 			GetWorld()->GetAuthGameMode()->RestartPlayer(GetWorld()->GetFirstPlayerController());
-			//UGameplayStatics::SetGamePaused(this, true);
 		}
 		break;
 	case EGamePlayState::EPlaying:

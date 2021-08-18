@@ -161,8 +161,10 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 	FVector End = ((ForwardVector * 200.f) + Start);
 	FCollisionQueryParams CollisionParams;
 
+
 	if(InfoWidget) 
 	{
+		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
 		// Check if interactable component is in front of player, and if so toggle info message.
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
 		{
@@ -336,7 +338,6 @@ void AMyrkurProjectCharacter::ActionPress()
 	print("Pressing interact");
 	if (InteractiveObject != NULL)
 	{	
-		print("Getting balls");
 		InteractiveObject->Interact();
 	}
 

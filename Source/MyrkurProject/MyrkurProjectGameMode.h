@@ -46,8 +46,11 @@ public:
 	void SetStateBeginRound();
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> HUDWidgetClass;
+	TSubclassOf<class UUserWidget> CountDownWidgetClass;
 
+	UPROPERTY()
+	UUserWidget* CountDownWidget;
+	
 	/** 
 	 * Set point to either the blu or red team
 	 * @param isBlueTeam if true then blue gets the point, false the red team gets the point
