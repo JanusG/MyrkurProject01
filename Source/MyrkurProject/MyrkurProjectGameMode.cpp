@@ -5,6 +5,7 @@
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Blue, FString::Printf(TEXT(text), fstring))
 
 #include "MyrkurProjectGameMode.h"
+#include "MyrkurProjectGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "MyrkurProjectHUD.h"
 #include "MyrkurProjectCharacter.h"
@@ -28,7 +29,12 @@ void AMyrkurProjectGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	print("New Game");
+	UMyrkurProjectGameInstance* GI = Cast<UMyrkurProjectGameInstance>(GetWorld()->GetGameInstance());
+
+	if(GI) 
+	{
+		FirstToWin = GI->GetFirstToWin();
+	}
 
 	SetCurrentState(EGamePlayState::EPlaying);
 

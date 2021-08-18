@@ -15,12 +15,12 @@ interact with 'E'
 - Updated ai movement and attack as well as animation
 - Added animation for player reaction of getting hit
 - Added function that the player can grab incoming ball by pressing 'interact' if the player has no balls to trow
+- pause menu
 - Added main menu
 
 ## Future updates
 - Rounds of play
 - Quit to menu button if game is lost or won
 - better ending if player looses or wins
-- pause menu
 - update AI and make tweaks of gameplay, speed and other variables
 

@@ -511,10 +511,9 @@ void AMyrkurProjectCharacter::EnablePlayerInput()
 void AMyrkurProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	//Run if player has no ball in hand then the player has a chance of catching
-	print("isOverlapping");
 	if(NumberOfBallsLeft <= 0)
 	{
-		//TODO:: get forward wector of both items and compare if they are facing each other with dot product
+		//get forward wector of both items and compare if they are facing each other with dot product
 		if (OtherActor && (OtherActor != this) && OtherComp) 
 		{
 			FVector BallVector = OtherActor->GetActorForwardVector();
