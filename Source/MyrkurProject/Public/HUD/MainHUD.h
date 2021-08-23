@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MainHUD.generated.h"
 
+class AMyrkurProjectCharacter;
+
 /**
  * 
  */
@@ -13,8 +15,11 @@ UCLASS()
 class MYRKURPROJECT_API UMainHUD : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+
 protected:
+	AMyrkurProjectCharacter* Character;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
