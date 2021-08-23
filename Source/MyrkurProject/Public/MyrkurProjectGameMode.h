@@ -79,6 +79,3 @@ private:
 	/** Handle setting new state of game */
 	void HandleNewState(EGamePlayState NewState);
 };
-
-
-

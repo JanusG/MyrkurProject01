@@ -101,7 +101,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* CatchBallSound;
 
-	/** DEPREICADED
+	/** DEPRICADED
 	 *  time curve for shots 
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

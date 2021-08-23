@@ -5,7 +5,7 @@
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, FString::Printf(TEXT(text), fstring))
 
 
-#include "InteractiveObject.h"
+#include "Level/InteractiveObject.h"
 AInteractiveObject::AInteractiveObject()
 {
 }

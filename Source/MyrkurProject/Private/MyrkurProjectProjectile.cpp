@@ -8,7 +8,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "MyrkurProjectCharacter.h"
+#include "Character/MyrkurProjectCharacter.h"
 
 AMyrkurProjectProjectile::AMyrkurProjectProjectile() 
 {

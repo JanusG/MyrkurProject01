@@ -3,7 +3,7 @@
 #define print(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, text)
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, FString::Printf(TEXT(text), fstring))
 
-#include "GetBallTrigger.h"
+#include "Level/GetBallTrigger.h"
 #include "DrawDebugHelpers.h"
 
 

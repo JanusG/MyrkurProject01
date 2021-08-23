@@ -5,7 +5,7 @@
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, FString::Printf(TEXT(text), fstring))
 
 
-#include "EnemyCharacter.h"
+#include "Enemy/EnemyCharacter.h"
 #include "MyrkurProjectGameMode.h"
 #include "MyrkurProjectProjectile.h"
 #include "Components/CapsuleComponent.h"

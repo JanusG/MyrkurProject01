@@ -4,9 +4,10 @@
 #define print(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Orange, text)
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Orange, FString::Printf(TEXT(text), fstring))
 
-#include "MyrkurProjectCharacter.h"
+#include "Character/MyrkurProjectCharacter.h"
 #include "MyrkurProjectProjectile.h"
 #include "MyrkurProjectGameMode.h"
+#include "Level/InteractiveObject.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -17,7 +18,6 @@
 #include "Components/TimelineComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
-#include "InteractiveObject.h"
 #include "LevelSequencePlayer.h"
 #include "math.h"
 
@@ -164,7 +164,7 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 
 	if(InfoWidget) 
 	{
-		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
+		// DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
 		// Check if interactable component is in front of player, and if so toggle info message.
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
 		{
@@ -335,7 +335,6 @@ void AMyrkurProjectCharacter::SetShotState()
 
 void AMyrkurProjectCharacter::ActionPress()
 {
-	print("Pressing interact");
 	if (InteractiveObject != NULL)
 	{	
 		InteractiveObject->Interact();
@@ -511,6 +510,8 @@ void AMyrkurProjectCharacter::EnablePlayerInput()
 
 void AMyrkurProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
+
+	print("Ball entering");
 	//Run if player has no ball in hand then the player has a chance of catching
 	if(NumberOfBallsLeft <= 0)
 	{

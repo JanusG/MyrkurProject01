@@ -6,9 +6,9 @@
 
 #include "MyrkurProjectGameMode.h"
 #include "MyrkurProjectGameInstance.h"
-#include "Kismet/GameplayStatics.h"
 #include "MyrkurProjectHUD.h"
-#include "MyrkurProjectCharacter.h"
+#include "Character/MyrkurProjectCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/Controller.h"
 
@@ -18,6 +18,8 @@ AMyrkurProjectGameMode::AMyrkurProjectGameMode()
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPersonCPP/Blueprints/FirstPersonCharacter"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
+
+	// set wi
 
 	// use our custom HUD class
 	HUDClass = AMyrkurProjectHUD::StaticClass();
@@ -69,6 +71,8 @@ void AMyrkurProjectGameMode::AddGamePoint(bool isBlueTeam)
 		RedScore++;
 	}
 
+	numRoundsPlayed++;
+
 	SetCurrentState(EGamePlayState::ENewRound);
 }
 
@@ -80,7 +84,6 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 		
 	case EGamePlayState::ENewRound:
 		{
-			print("New Round");
 			// check if the game is finished
 
 			// if game is finished go to game over state.

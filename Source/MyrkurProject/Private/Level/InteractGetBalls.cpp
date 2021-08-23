@@ -5,9 +5,9 @@
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, FString::Printf(TEXT(text), fstring))
 
 
-#include "InteractGetBalls.h"
+#include "Level/InteractGetBalls.h"
 #include "Kismet/GameplayStatics.h"
-#include "MyrkurProjectCharacter.h"
+#include "Character/MyrkurProjectCharacter.h"
 
 AInteractGetBalls::AInteractGetBalls()
 {
@@ -19,15 +19,15 @@ AInteractGetBalls::AInteractGetBalls()
 void AInteractGetBalls::BeginPlay()
 {
 	Super::BeginPlay();
-	player = Cast<AMyrkurProjectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 void AInteractGetBalls::Interact()
 {
+	Super::Interact();
+	player = Cast<AMyrkurProjectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	// give player balls if he asks for them, sets them o maximum ammount of balls
 	if (player != NULL)
 	{
-		print("Trying to set balls");
 		player->SetBallsToMax();
 	}
 	

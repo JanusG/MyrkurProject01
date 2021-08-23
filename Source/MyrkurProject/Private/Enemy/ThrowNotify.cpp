@@ -4,9 +4,9 @@
 #define print(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Orange, text)
 #define printf(text, fstring) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Orange, FString::Printf(TEXT(text), fstring))
 
-#include "ThrowNotify.h"
+#include "Enemy/ThrowNotify.h"
+#include "Enemy/EnemyCharacter.h"
 #include "Engine.h"
-#include "EnemyCharacter.h"
 
 void UThrowNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
