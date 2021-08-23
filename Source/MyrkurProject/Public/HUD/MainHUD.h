@@ -16,7 +16,7 @@ class MYRKURPROJECT_API UMainHUD : public UUserWidget
 	
 protected:
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UProgressBar* HealthBar;
