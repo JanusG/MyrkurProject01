@@ -45,7 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetStateBeginRound();
 
-	
+	/** Returns if the game has finished or not */
+	bool GameFinished();
+
 	/** 
 	 * Set point to either the blue or red team
 	 * @param isBlueTeam if true then blue gets the point, false the red team gets the point
@@ -59,10 +61,6 @@ protected:
 	UPROPERTY()
 	AMyrkurProjectCharacter* PlayerCharacter;
 
-	/**  */
-	UPROPERTY()
-	UUserWidget* CountDownWidget;
-
 	UPROPERTY(EditAnywhere, Category = Gameplay)
 	int FirstToWin = 3;
 
@@ -74,6 +72,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = Gameplay)
 	int RedScore = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = Gameplay)
+	bool bGameOver = false;
 
 private:
 	/** Keeps track of current state of game */

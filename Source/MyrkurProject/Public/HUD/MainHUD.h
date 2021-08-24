@@ -40,11 +40,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
 	TSubclassOf<UUserWidget> CountdownWidgetClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
+	TSubclassOf<UUserWidget> EndWidgetClass;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Runtime)
 	URoundCountdownHUD* CountdownWidget;
 
+	UPROPERTY(VisibleInstanceOnly, Category = Runtime)
+	URoundCountdownHUD* EndWidget;
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
-	
 };

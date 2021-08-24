@@ -52,6 +52,7 @@ void AEnemyCharacter::BeginPlay()
 
 	// Attach to main mesh after constructor has made the bones
 	BallMesh->AttachToComponent(CMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Grip"));
+
 }
 
 float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -81,7 +82,7 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 				float montageStatus = AnimInstance->Montage_Play(DyingAnim, 1.0f);
 			}
 		}
-
+		
 		FTimerHandle timeHandler;
 		GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::AddGamePoint, 2.5f, false);
 	}
@@ -104,6 +105,7 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void AEnemyCharacter::SetCharacterRagdoll()
 {
 	// Set ragdoll effect
+	print("Ragdoll");
 	CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
 	CMesh->SetSimulatePhysics(true);
 }
@@ -126,17 +128,26 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 void AEnemyCharacter::Reset()
 {
-	FVector SpawnLocation = FVector(260, -1595, 260);
-	FRotator SpawnRotation = FRotator(0, 0, 0);
-	CurrentHealth = 100;
-	TeleportTo(SpawnLocation, SpawnRotation);
+	AMyrkurProjectGameMode* GameMode = Cast<AMyrkurProjectGameMode>(GetWorld()->GetAuthGameMode());
 
-	// Re enable pawn movements
-	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
-	if (CharacterComp)
+	if(!(GameMode->GameFinished()))
+	{	
+		FVector SpawnLocation = FVector(260, -1595, 260);
+		FRotator SpawnRotation = FRotator(0, 0, 0);
+		CurrentHealth = 100;
+		TeleportTo(SpawnLocation, SpawnRotation);
+
+		// Re enable pawn movements
+		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (CharacterComp)
+		{
+			CharacterComp->SetMovementMode(EMovementMode::MOVE_Walking);
+			CharacterComp->SetComponentTickEnabled(true);
+		}
+	}
+	else
 	{
-		CharacterComp->SetMovementMode(EMovementMode::MOVE_Walking);
-		CharacterComp->SetComponentTickEnabled(true);
+		SetCharacterRagdoll();
 	}
 }
 

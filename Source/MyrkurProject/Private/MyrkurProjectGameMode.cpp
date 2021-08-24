@@ -55,12 +55,18 @@ EGamePlayState AMyrkurProjectGameMode::GetCurrentState() const
 
 void AMyrkurProjectGameMode::SetCurrentState(EGamePlayState NewState)
 {
+	CurrentState = NewState;
 	HandleNewState(NewState);
 }
 
 void AMyrkurProjectGameMode::SetStateBeginRound()
 {
 	SetCurrentState(EGamePlayState::ENewRound);
+}
+
+bool AMyrkurProjectGameMode::GameFinished()
+{
+	return bGameOver;
 }
 
 void AMyrkurProjectGameMode::AddGamePoint(bool isBlueTeam)
@@ -99,6 +105,7 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			// if game is finished go to game over state.
 			if(BlueScore >= FirstToWin || RedScore >= FirstToWin)
 			{
+				print("Someone has won");
 				SetCurrentState(EGamePlayState::EGameOver);
 				break;
 			}
@@ -126,6 +133,7 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 		break;
 	case EGamePlayState::EGameOver:
 		{
+			bGameOver = true;
 			// set winning/ loosing params for each player
 
 			// if red wins, play loosing animation

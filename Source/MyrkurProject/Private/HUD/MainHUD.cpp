@@ -23,7 +23,6 @@ void UMainHUD::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
         // Show how many balls are left 
         NumBallsLeft->SetText(Character->GetBallsLeftText());
     }
-
 }
 
 void UMainHUD::PlayCountdownWidget()
