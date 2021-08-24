@@ -17,10 +17,13 @@ interact with 'E'
 - Added function that the player can grab incoming ball by pressing 'interact' if the player has no balls to trow
 - pause menu
 - Added main menu
+- Added pause menu, quit to main menu
+- Dynamic rounds to win
 
 ## Future updates
-- Rounds of play
-- Quit to menu button if game is lost or won
 - better ending if player looses or wins
 - update AI and make tweaks of gameplay, speed and other variables
+- Set ammunition button on a timer
+- add strafe
+- fix bugs
 
