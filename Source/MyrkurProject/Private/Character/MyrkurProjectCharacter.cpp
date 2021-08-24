@@ -8,6 +8,7 @@
 #include "MyrkurProjectProjectile.h"
 #include "MyrkurProjectGameMode.h"
 #include "Level/InteractiveObject.h"
+#include "HUD/MainHUD.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -446,6 +447,11 @@ void AMyrkurProjectCharacter::UpdateHealth(float HealthChange)
 	}
 }
 
+FText AMyrkurProjectCharacter::GetBallsLeftText()
+{
+	return FText::AsNumber(NumberOfBallsLeft);
+}
+
 void AMyrkurProjectCharacter::SetDamageState()
 {
 	// toggle damage tick
@@ -467,7 +473,7 @@ void AMyrkurProjectCharacter::ShowInfoWidget()
 	if (HelpWidgetClass) 
 	{
 		// Initialize the info UI and set parameters 
-		InfoWidget = CreateWidget<UUserWidget>(GetWorld(), HelpWidgetClass);
+		InfoWidget = CreateWidget<UMainHUD>(GetWorld(), HelpWidgetClass);
 		if (InfoWidget)
 		{
 			InfoWidget->AddToViewport();
@@ -479,7 +485,9 @@ void AMyrkurProjectCharacter::ShowInfoWidget()
 
 			// Hidden while the function isn't ready so not to confuse the player
 			// InfoWidget->GetWidgetFromName("HealthBar")->SetVisibility(ESlateVisibility::Hidden);
-
+			
+			// When initialized play what round is on
+			InfoWidget->PlayCountdownWidget();
 		}
 	}
 }

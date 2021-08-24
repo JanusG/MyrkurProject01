@@ -7,6 +7,13 @@
 #include "MainHUD.generated.h"
 
 class AMyrkurProjectCharacter;
+class AMyrkurProjectGameMode;
+
+class URoundCountdownHUD;
+
+class UProgressBar;
+class UTextBlock;
+class UVerticalBox;
 
 /**
  * 
@@ -17,12 +24,27 @@ class MYRKURPROJECT_API UMainHUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	void PlayCountdownWidget();
 
 protected:
 	AMyrkurProjectCharacter* Character;
 
-	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UProgressBar* HealthBar;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	class UProgressBar* HealthBar;
+	UTextBlock* NumBallsLeft;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UVerticalBox* CountdownNotification;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
+	TSubclassOf<UUserWidget> CountdownWidgetClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Runtime)
+	URoundCountdownHUD* CountdownWidget;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
+
+	
 };

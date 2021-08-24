@@ -31,8 +31,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	/** pointer reference to the playerCharacter */
-	AMyrkurProjectCharacter* PlayerCharacter;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> MainHUDCLass;
 
 	/** Returns the current playing state */
 	UFUNCTION(BlueprintPure)
@@ -45,20 +45,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetStateBeginRound();
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> CountDownWidgetClass;
-
-	UPROPERTY()
-	UUserWidget* CountDownWidget;
 	
 	/** 
-	 * Set point to either the blu or red team
+	 * Set point to either the blue or red team
 	 * @param isBlueTeam if true then blue gets the point, false the red team gets the point
 	 */
 	UFUNCTION(BlueprintCallable)
 	void AddGamePoint(bool isBlueTeam);
 
 protected:
+
+	/** pointer reference to the playerCharacter */
+	UPROPERTY()
+	AMyrkurProjectCharacter* PlayerCharacter;
+
+	/**  */
+	UPROPERTY()
+	UUserWidget* CountDownWidget;
 
 	UPROPERTY(EditAnywhere, Category = Gameplay)
 	int FirstToWin = 3;
@@ -76,6 +79,8 @@ private:
 	/** Keeps track of current state of game */
 	EGamePlayState CurrentState;
 
+	void EnablePlayerInput();
+	
 	/** Handle setting new state of game */
 	void HandleNewState(EGamePlayState NewState);
 };

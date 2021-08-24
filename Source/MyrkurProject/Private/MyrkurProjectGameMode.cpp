@@ -36,9 +36,11 @@ void AMyrkurProjectGameMode::BeginPlay()
 		FirstToWin = GI->GetFirstToWin();
 	}
 
-	SetCurrentState(EGamePlayState::EPlaying);
 
 	PlayerCharacter = Cast<AMyrkurProjectCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+
+	
+	SetCurrentState(EGamePlayState::EPlaying);
 }
 
 void AMyrkurProjectGameMode::Tick(float DeltaTime)
@@ -76,6 +78,14 @@ void AMyrkurProjectGameMode::AddGamePoint(bool isBlueTeam)
 	SetCurrentState(EGamePlayState::ENewRound);
 }
 
+void AMyrkurProjectGameMode::EnablePlayerInput()
+{
+	if(PlayerCharacter)
+	{
+		PlayerCharacter->EnableInput(GetWorld()->GetFirstPlayerController());
+	}
+}
+
 void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 {
 	//Switch case to handle the state change
@@ -90,21 +100,39 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			if(BlueScore >= FirstToWin || RedScore >= FirstToWin)
 			{
 				SetCurrentState(EGamePlayState::EGameOver);
+				break;
 			}
 
 			// if game is not finished start a new round
 			ResetLevel();
 			GetWorld()->GetAuthGameMode()->RestartPlayer(GetWorld()->GetFirstPlayerController());
+
+			PlayerCharacter = Cast<AMyrkurProjectCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+
+			SetCurrentState(EGamePlayState::EPlaying);
 		}
 		break;
 	case EGamePlayState::EPlaying:
 		{
 			// if either player dies, finish play
+			if(PlayerCharacter)
+			{
+				PlayerCharacter->DisableInput(GetWorld()->GetFirstPlayerController());
+			}
+
+			FTimerHandle timeHandler;
+			GetWorldTimerManager().SetTimer(timeHandler, this, &AMyrkurProjectGameMode::EnablePlayerInput, 1.5f, false);
 		}
 		break;
 	case EGamePlayState::EGameOver:
 		{
 			// set winning/ loosing params for each player
+
+			// if red wins, play loosing animation
+
+			// if blue wins, play winning sequence
+
+			// prompt player to return to menu or remach!
 		}
 		break;
 	case EGamePlayState::EUnknown:

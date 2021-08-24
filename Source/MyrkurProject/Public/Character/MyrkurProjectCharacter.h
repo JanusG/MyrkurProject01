@@ -14,6 +14,7 @@ class UCapsuleComponent;
 class UAnimMontage;
 class USoundBase;
 class UCurveFloat;
+class UMainHUD;
 class UTimelineComponent;
 class ULevelSequence;
 class ULevelSequencePlayer;
@@ -141,6 +142,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int MaxBallAmmount;
 
+	UFUNCTION(BlueprintPure)
+	FText GetBallsLeftText();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	float dmgPitch = 2;
 
@@ -170,14 +174,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<UUserWidget> HelpWidgetClass;
 
-	UPROPERTY(EditAnywhere)
-	UUserWidget* InfoWidget;
+	UPROPERTY(VisibleInstanceOnly, Category = Runtime)
+	UMainHUD* InfoWidget;
 
 	// Reference UMG Asset in the Editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<UUserWidget> PauseWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, Category = Runtime)
 	UUserWidget* PauseWidget;
 
 	UPROPERTY(EditAnywhere)
