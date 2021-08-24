@@ -87,4 +87,7 @@ public:
 	/** Set active weapon visible */
 	UFUNCTION(BlueprintCallable)
 	void SeteWeaponVisible();
+
+private:
+	bool bIsDead = false;
 };

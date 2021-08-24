@@ -134,10 +134,13 @@ void AMyrkurProjectCharacter::BeginPlay()
 
 float AMyrkurProjectCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	UpdateHealth(-DamageAmount);
+	if(CanBeDamaged())
+	{
+		UpdateHealth(-DamageAmount);
 
-	// play animation
-	playDamageSequence();
+		// play animation
+		playDamageSequence();
+	}
 	
 	// Set so the player cant catch the ball after he gets hit
 	bCanCatch = false;
@@ -162,7 +165,7 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 	FVector End = ((ForwardVector * 200.f) + Start);
 	FCollisionQueryParams CollisionParams;
 
-
+	// 
 	if(InfoWidget) 
 	{
 		// DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
@@ -185,7 +188,6 @@ void AMyrkurProjectCharacter::Tick(float DeltaTime)
 		}
 	}
 	
-
 	// if character can be damaged by AOE the set the damage and show danger screen
 	if (bCanTickDamage)
 	{

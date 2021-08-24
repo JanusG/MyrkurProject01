@@ -55,8 +55,8 @@ EGamePlayState AMyrkurProjectGameMode::GetCurrentState() const
 
 void AMyrkurProjectGameMode::SetCurrentState(EGamePlayState NewState)
 {
-	CurrentState = NewState;
-	HandleNewState(NewState);
+		CurrentState = NewState;
+		HandleNewState(NewState);
 }
 
 void AMyrkurProjectGameMode::SetStateBeginRound()
@@ -71,6 +71,10 @@ bool AMyrkurProjectGameMode::GameFinished()
 
 void AMyrkurProjectGameMode::AddGamePoint(bool isBlueTeam)
 {
+	// if the game is finished, exit function
+	if(bGameOver)
+		return;
+	
 	if(isBlueTeam){
 		BlueScore++;
 	}
@@ -111,6 +115,7 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			}
 
 			// if game is not finished start a new round
+			print("Reset");
 			ResetLevel();
 			GetWorld()->GetAuthGameMode()->RestartPlayer(GetWorld()->GetFirstPlayerController());
 
@@ -139,6 +144,7 @@ void AMyrkurProjectGameMode::HandleNewState(EGamePlayState NewState)
 			// if red wins, play loosing animation
 
 			// if blue wins, play winning sequence
+			PlayerCharacter->SetCanBeDamaged(false);
 
 			// prompt player to return to menu or remach!
 		}

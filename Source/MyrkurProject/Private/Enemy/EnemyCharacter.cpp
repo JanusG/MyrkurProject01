@@ -61,8 +61,9 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, FullHealth);
 
-	if (CurrentHealth <= 0)
+	if (CurrentHealth <= 0 && !bIsDead)
 	{
+		bIsDead = true;
 		// Stop Actor movements
 		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
 		if (CharacterComp)
@@ -83,8 +84,9 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 			}
 		}
 		
-		FTimerHandle timeHandler;
-		GetWorldTimerManager().SetTimer(timeHandler, this, &AEnemyCharacter::AddGamePoint, 2.5f, false);
+		// delay of setting the gamepoint while animation is running
+		FTimerHandle PointTime;
+		GetWorldTimerManager().SetTimer(PointTime, this, &AEnemyCharacter::AddGamePoint, 2.3f, false);
 	}
 	else 
 	{
@@ -104,8 +106,12 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 void AEnemyCharacter::SetCharacterRagdoll()
 {
-	// Set ragdoll effect
-	print("Ragdoll");
+	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+
+	CharacterComp->StopMovementImmediately();
+	CharacterComp->DisableMovement();
+	CharacterComp->SetComponentTickEnabled(false);
+
 	CMesh->SetCollisionProfileName(TEXT("Ragdoll"));
 	CMesh->SetSimulatePhysics(true);
 }
@@ -117,6 +123,11 @@ void AEnemyCharacter::AddGamePoint()
 	if(GameMode) 
 	{
 		GameMode->AddGamePoint(true);
+	}
+
+	if(GameMode->GameFinished())
+	{
+		SetCharacterRagdoll();
 	}
 }
 // Called every frame
@@ -144,10 +155,8 @@ void AEnemyCharacter::Reset()
 			CharacterComp->SetMovementMode(EMovementMode::MOVE_Walking);
 			CharacterComp->SetComponentTickEnabled(true);
 		}
-	}
-	else
-	{
-		SetCharacterRagdoll();
+
+		bIsDead = false;
 	}
 }
 
