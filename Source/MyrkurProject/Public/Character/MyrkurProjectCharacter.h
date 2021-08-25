@@ -144,6 +144,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FText GetBallsLeftText();
+
+	UFUNCTION(BlueprintPure)
+	float GetMaxBallsAmmount();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	float dmgPitch = 2;

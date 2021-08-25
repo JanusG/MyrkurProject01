@@ -345,7 +345,6 @@ void AMyrkurProjectCharacter::ActionPress()
 
 	if(bCanCatch)
 	{
-		print("catching ball");
 		CatchBall();
 	}
 }
@@ -468,6 +467,10 @@ void AMyrkurProjectCharacter::SetDamageState()
 	InfoWidget->GetWidgetFromName("Danger")->SetVisibility(ESlateVisibility::Hidden);
 }
 
+float AMyrkurProjectCharacter::GetMaxBallsAmmount()
+{
+	return MaxBallAmmount;
+}
 void AMyrkurProjectCharacter::ShowInfoWidget()
 {
 	

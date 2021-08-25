@@ -36,6 +36,12 @@ protected:
 	UTextBlock* NumBallsLeft;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* FirstToWin;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* OutOf;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UVerticalBox* CountdownNotification;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
@@ -50,6 +56,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = Runtime)
 	URoundCountdownHUD* EndWidget;
 
+	virtual void NativeConstruct() override;
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
+
 
 };
