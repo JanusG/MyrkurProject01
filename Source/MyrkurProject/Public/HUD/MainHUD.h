@@ -29,6 +29,8 @@ public:
 protected:
 	AMyrkurProjectCharacter* Character;
 
+	AMyrkurProjectGameMode* GameMode;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UProgressBar* HealthBar;
 
@@ -42,7 +44,13 @@ protected:
 	UTextBlock* OutOf;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UVerticalBox* CountdownNotification;
+	UTextBlock* RedScore;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* BlueScore;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UVerticalBox* VertBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
 	TSubclassOf<UUserWidget> CountdownWidgetClass;

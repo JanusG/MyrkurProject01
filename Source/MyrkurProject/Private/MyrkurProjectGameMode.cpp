@@ -88,6 +88,21 @@ void AMyrkurProjectGameMode::AddGamePoint(bool isBlueTeam)
 	SetCurrentState(EGamePlayState::ENewRound);
 }
 
+FText AMyrkurProjectGameMode::GetFirstToWinText()
+{
+	return FText::AsNumber(FirstToWin);
+}
+
+FText AMyrkurProjectGameMode::GetBlueScoreText()
+{
+	return FText::AsNumber(BlueScore);
+}
+	
+FText AMyrkurProjectGameMode::GetRedScoreText()
+{
+	return FText::AsNumber(RedScore);
+}
+
 void AMyrkurProjectGameMode::EnablePlayerInput()
 {
 	if(PlayerCharacter)

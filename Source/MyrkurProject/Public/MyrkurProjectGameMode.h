@@ -55,6 +55,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddGamePoint(bool isBlueTeam);
 
+	UFUNCTION(BlueprintCallable)
+	FText GetFirstToWinText();
+
+	UFUNCTION(BlueprintCallable)
+	FText GetBlueScoreText();
+	
+	UFUNCTION(BlueprintCallable)
+	FText GetRedScoreText();
+
 protected:
 
 	/** pointer reference to the playerCharacter */
