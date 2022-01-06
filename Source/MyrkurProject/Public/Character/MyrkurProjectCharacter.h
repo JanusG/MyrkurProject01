@@ -51,6 +51,16 @@ class AMyrkurProjectCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
+	/** 3rd person camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* ThirdPersonCameraComponent;
+
+	/** Array to managed cameras in scene */
+	UPROPERTY()
+	TArray<UCameraComponent> Cameras;
+
+	int ActiveCamera = 0;
+
 public:
 	AMyrkurProjectCharacter();
 
@@ -61,6 +71,12 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void Tick(float DeltaTime) override;
+	
+	/** Overlap begin for trigger capsule */
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	/** Overlap end for trigger capsule */
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -164,14 +180,6 @@ public:
 	/** Set if Player is taking AOE damage */
 	UFUNCTION()
 	void SetDamageState();
-	
-	/** Overlap begin for trigger capsule */
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-
-	/** Overlap end for trigger capsule */
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	// Reference UMG Asset in the Editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -191,6 +199,7 @@ public:
 	AInteractiveObject* InteractiveObject;
 
 	/** Give the player max ammount of balls */
+	UFUNCTION()
 	void SetBallsToMax();
 protected:
 

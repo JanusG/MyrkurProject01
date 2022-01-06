@@ -42,6 +42,13 @@ AMyrkurProjectCharacter::AMyrkurProjectCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+	// Create a CameraComponent	
+	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdtPersonCamera"));
+	ThirdPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+	ThirdPersonCameraComponent->SetRelativeLocation(FVector(-600.56f, 1.75f, 500.f)); // Position the camera
+	ThirdPersonCameraComponent->SetRelativeRotation(FRotator(0, -45.f, 0));
+	ThirdPersonCameraComponent->bUsePawnControlRotation = true;
+
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);
@@ -130,6 +137,10 @@ void AMyrkurProjectCharacter::BeginPlay()
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGrip"));
+
+	//Add cameras to array
+	Cameras.Add(*FirstPersonCameraComponent);
+	Cameras.Add(*ThirdPersonCameraComponent);
 }
 
 float AMyrkurProjectCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
